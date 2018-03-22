@@ -58,15 +58,15 @@ namespace SAPHelper
         }
 
         public List<Tabela> TabelasFilhas { get; set; } = new List<Tabela>() { };
-        public SAPbobsCOM.BoYesNoEnum CanCancel { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanClose { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanCreateDefaultForm { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanDelete { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanFind { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanLog { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanYearTransfer { get; set; }
-        public SAPbobsCOM.BoYesNoEnum ManageSeries { get; set; }
-        public SAPbobsCOM.BoUDOObjType ObjectType
+        public BoYesNoEnum CanCancel { get; set; }
+        public BoYesNoEnum CanClose { get; set; }
+        public BoYesNoEnum CanCreateDefaultForm { get; set; }
+        public BoYesNoEnum CanDelete { get; set; }
+        public BoYesNoEnum CanFind { get; set; }
+        public BoYesNoEnum CanLog { get; set; }
+        public BoYesNoEnum CanYearTransfer { get; set; }
+        public BoYesNoEnum ManageSeries { get; set; }
+        public BoUDOObjType ObjectType
         {
             get
             {

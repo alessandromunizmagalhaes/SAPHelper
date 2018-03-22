@@ -1,10 +1,11 @@
-﻿using System;
+﻿using SAPbouiCOM;
+using System;
 
 namespace SAPHelper
 {
     public static class SAPConnection
     {
-        public static SAPbouiCOM.Application SBOApplication;
+        public static Application SBOApplication;
         public static SAPbobsCOM.Company oCompany;
 
         public delegate void SBOApplicationHandler(SAPbouiCOM.Application SBOApplication);
@@ -31,9 +32,9 @@ namespace SAPHelper
 
         private static void SetApplication(SBOApplicationHandler applicationHandler)
         {
-            SAPbouiCOM.SboGuiApi sboGuiApi;
+            SboGuiApi sboGuiApi;
             string connectionString = null;
-            sboGuiApi = new SAPbouiCOM.SboGuiApi();
+            sboGuiApi = new SboGuiApi();
 
             try
             {

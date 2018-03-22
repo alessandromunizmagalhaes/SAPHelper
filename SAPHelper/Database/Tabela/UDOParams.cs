@@ -1,25 +1,27 @@
-﻿namespace SAPHelper
+﻿using SAPbobsCOM;
+
+namespace SAPHelper
 {
     public class UDOParams
     {
-        public SAPbobsCOM.BoYesNoEnum CanCancel { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanClose { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanCreateDefaultForm { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanDelete { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanFind { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanLog { get; set; }
-        public SAPbobsCOM.BoYesNoEnum CanYearTransfer { get; set; }
-        public SAPbobsCOM.BoYesNoEnum ManageSeries { get; set; }
+        public BoYesNoEnum CanCancel { get; set; }
+        public BoYesNoEnum CanClose { get; set; }
+        public BoYesNoEnum CanCreateDefaultForm { get; set; }
+        public BoYesNoEnum CanDelete { get; set; }
+        public BoYesNoEnum CanFind { get; set; }
+        public BoYesNoEnum CanLog { get; set; }
+        public BoYesNoEnum CanYearTransfer { get; set; }
+        public BoYesNoEnum ManageSeries { get; set; }
 
         public UDOParams(
-                SAPbobsCOM.BoYesNoEnum canCancel = SAPbobsCOM.BoYesNoEnum.tYES
-                , SAPbobsCOM.BoYesNoEnum canClose = SAPbobsCOM.BoYesNoEnum.tYES
-                , SAPbobsCOM.BoYesNoEnum canCreateDefaultForm = SAPbobsCOM.BoYesNoEnum.tYES
-                , SAPbobsCOM.BoYesNoEnum canDelete = SAPbobsCOM.BoYesNoEnum.tYES
-                , SAPbobsCOM.BoYesNoEnum canFind = SAPbobsCOM.BoYesNoEnum.tYES
-                , SAPbobsCOM.BoYesNoEnum canLog = SAPbobsCOM.BoYesNoEnum.tYES
-                , SAPbobsCOM.BoYesNoEnum canYearTransfer = SAPbobsCOM.BoYesNoEnum.tYES
-                , SAPbobsCOM.BoYesNoEnum manageSeries = SAPbobsCOM.BoYesNoEnum.tYES)
+                BoYesNoEnum canCancel = BoYesNoEnum.tYES
+                , BoYesNoEnum canClose = BoYesNoEnum.tYES
+                , BoYesNoEnum canCreateDefaultForm = BoYesNoEnum.tYES
+                , BoYesNoEnum canDelete = BoYesNoEnum.tYES
+                , BoYesNoEnum canFind = BoYesNoEnum.tYES
+                , BoYesNoEnum canLog = BoYesNoEnum.tYES
+                , BoYesNoEnum canYearTransfer = BoYesNoEnum.tYES
+                , BoYesNoEnum manageSeries = BoYesNoEnum.tYES)
         {
             CanCancel = canCancel;
             CanClose = canClose;

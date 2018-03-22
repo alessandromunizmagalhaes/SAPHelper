@@ -1,0 +1,35 @@
+﻿namespace SAPHelper
+{
+    public static class Events
+    {
+        public static bool Antes(SAPbouiCOM.BusinessObjectInfo pVal)
+        {
+            return pVal.BeforeAction;
+        }
+
+        public static bool Depois(SAPbouiCOM.BusinessObjectInfo pVal)
+        {
+            return !pVal.BeforeAction;
+        }
+
+        public static bool Antes(SAPbouiCOM.MenuEvent pVal)
+        {
+            return pVal.BeforeAction;
+        }
+
+        public static bool Depois(SAPbouiCOM.MenuEvent pVal)
+        {
+            return !pVal.BeforeAction;
+        }
+
+        public static bool Antes(SAPbouiCOM.ItemEvent pVal)
+        {
+            return pVal.BeforeAction;
+        }
+
+        public static bool Depois(SAPbouiCOM.ItemEvent pVal)
+        {
+            return !pVal.BeforeAction;
+        }
+    }
+}

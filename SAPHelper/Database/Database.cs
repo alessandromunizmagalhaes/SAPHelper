@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SAPbobsCOM;
+using System;
 using System.Collections.Generic;
 
 namespace SAPHelper
 {
     public static class Database
     {
-        public static SAPbobsCOM.Company _company;
+        private static Company _company;
 
         #region :: Gestão de Tabelas
 
@@ -52,7 +53,7 @@ namespace SAPHelper
         private static void DefinirTabelasComoFilhasDoUDO(string nomeTabelaPai, List<Tabela> tabelasFilhas)
         {
             GC.Collect();
-            SAPbobsCOM.UserObjectsMD objUserObjectMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserObjectsMD);
+            UserObjectsMD objUserObjectMD = _company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
             if (objUserObjectMD.GetByKey(nomeTabelaPai))
             {
                 // tem que percorrer denovo todas as tabelas filhas, para seta-las como filhas.
@@ -78,7 +79,7 @@ namespace SAPHelper
         private static void DefinirTabelaComoUDO(TabelaUDO tabela)
         {
             GC.Collect();
-            SAPbobsCOM.UserObjectsMD objUserObjectMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserObjectsMD);
+            UserObjectsMD objUserObjectMD = _company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
 
             objUserObjectMD.TableName = tabela.NomeSemArroba;
             objUserObjectMD.Name = tabela.NomeSemArroba;
@@ -107,7 +108,7 @@ namespace SAPHelper
         private static void CriarUserTable(Tabela tabela)
         {
             GC.Collect();
-            SAPbobsCOM.UserTablesMD oUserTablesMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserTables);
+            UserTablesMD oUserTablesMD = _company.GetBusinessObject(BoObjectTypes.oUserTables);
 
             oUserTablesMD.TableName = tabela.NomeSemArroba;
             oUserTablesMD.TableDescription = tabela.Descricao;
@@ -125,7 +126,7 @@ namespace SAPHelper
         public static void ExcluirTabela(string nomeSemArroba)
         {
             GC.Collect();
-            SAPbobsCOM.UserObjectsMD oUDO = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserObjectsMD);
+            UserObjectsMD oUDO = _company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
 
             if (oUDO.GetByKey(nomeSemArroba))
             {
@@ -136,7 +137,7 @@ namespace SAPHelper
             System.Runtime.InteropServices.Marshal.ReleaseComObject(oUDO);
             oUDO = null;
 
-            SAPbobsCOM.UserTablesMD objUserTablesMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserTables);
+            UserTablesMD objUserTablesMD = _company.GetBusinessObject(BoObjectTypes.oUserTables);
             if (objUserTablesMD.GetByKey(nomeSemArroba))
             {
                 objUserTablesMD.TableName = nomeSemArroba;
@@ -155,7 +156,7 @@ namespace SAPHelper
 
         public static bool ExisteTabela(string nome_tabela)
         {
-            SAPbobsCOM.Recordset rs = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
+            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql = "SELECT COUNT(*) FROM OUTB WHERE TableName = '" + nome_tabela + "'";
             rs.DoQuery(sql);
 
@@ -214,7 +215,7 @@ namespace SAPHelper
         public static void DefinirColunasComoUDO(string nome_tabela, List<Coluna> colunas, bool criar_campo_code_antes = false)
         {
             GC.Collect();
-            SAPbobsCOM.UserObjectsMD objUserObjectMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserObjectsMD);
+            UserObjectsMD objUserObjectMD = _company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
             if (objUserObjectMD.GetByKey(nome_tabela))
             {
                 int i = 1;
@@ -250,61 +251,61 @@ namespace SAPHelper
         private static void CriarUserField(string nome_tabela, Coluna coluna)
         {
             GC.Collect();
-            SAPbobsCOM.UserFieldsMD objUserFieldsMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserFields);
+            UserFieldsMD objUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
             objUserFieldsMD.TableName = nome_tabela;
             objUserFieldsMD.Name = coluna.Nome;
             objUserFieldsMD.Description = coluna.Descricao;
 
             if (coluna is ColunaVarchar)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Alpha;
+                objUserFieldsMD.Type = BoFieldTypes.db_Alpha;
             }
             else if (coluna is ColunaText)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Memo;
+                objUserFieldsMD.Type = BoFieldTypes.db_Memo;
             }
             else if (coluna is ColunaDate)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Date;
+                objUserFieldsMD.Type = BoFieldTypes.db_Date;
             }
             else if (coluna is ColunaInt)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Numeric;
+                objUserFieldsMD.Type = BoFieldTypes.db_Numeric;
             }
             else if (coluna is ColunaTime)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Date;
-                objUserFieldsMD.SubType = SAPbobsCOM.BoFldSubTypes.st_Time;
+                objUserFieldsMD.Type = BoFieldTypes.db_Date;
+                objUserFieldsMD.SubType = BoFldSubTypes.st_Time;
             }
             else if (coluna is ColunaPercent)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Float;
-                objUserFieldsMD.SubType = SAPbobsCOM.BoFldSubTypes.st_Percentage;
+                objUserFieldsMD.Type = BoFieldTypes.db_Float;
+                objUserFieldsMD.SubType = BoFldSubTypes.st_Percentage;
             }
             else if (coluna is ColunaSum)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Float;
-                objUserFieldsMD.SubType = SAPbobsCOM.BoFldSubTypes.st_Sum;
+                objUserFieldsMD.Type = BoFieldTypes.db_Float;
+                objUserFieldsMD.SubType = BoFldSubTypes.st_Sum;
             }
             else if (coluna is ColunaQuantity)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Float;
-                objUserFieldsMD.SubType = SAPbobsCOM.BoFldSubTypes.st_Percentage;
+                objUserFieldsMD.Type = BoFieldTypes.db_Float;
+                objUserFieldsMD.SubType = BoFldSubTypes.st_Percentage;
             }
             else if (coluna is ColunaPrice)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Float;
-                objUserFieldsMD.SubType = SAPbobsCOM.BoFldSubTypes.st_Price;
+                objUserFieldsMD.Type = BoFieldTypes.db_Float;
+                objUserFieldsMD.SubType = BoFldSubTypes.st_Price;
             }
             else if (coluna is ColunaLink)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Memo;
-                objUserFieldsMD.SubType = SAPbobsCOM.BoFldSubTypes.st_Link;
+                objUserFieldsMD.Type = BoFieldTypes.db_Memo;
+                objUserFieldsMD.SubType = BoFldSubTypes.st_Link;
             }
             else if (coluna is ColunaLink)
             {
-                objUserFieldsMD.Type = SAPbobsCOM.BoFieldTypes.db_Alpha;
-                objUserFieldsMD.SubType = SAPbobsCOM.BoFldSubTypes.st_Image;
+                objUserFieldsMD.Type = BoFieldTypes.db_Alpha;
+                objUserFieldsMD.SubType = BoFldSubTypes.st_Image;
             }
 
             if (coluna.Tamanho > 0)
@@ -322,7 +323,7 @@ namespace SAPHelper
             objUserFieldsMD = null;
         }
 
-        private static void AdicionarFindColumnsAoObjeto(SAPbobsCOM.UserObjectsMD objUserObjectMD, Coluna coluna)
+        private static void AdicionarFindColumnsAoObjeto(UserObjectsMD objUserObjectMD, Coluna coluna)
         {
             objUserObjectMD.FindColumns.ColumnAlias = coluna.Nome;
             objUserObjectMD.FindColumns.ColumnDescription = coluna.Descricao;
@@ -334,7 +335,7 @@ namespace SAPHelper
             int FieldId = GetFieldId(nome_tabela, nome_campo);
 
             GC.Collect();
-            SAPbobsCOM.UserFieldsMD oUserFieldsMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserFields);
+            UserFieldsMD oUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
             if (oUserFieldsMD.GetByKey(nome_tabela, FieldId))
             {
                 if (oUserFieldsMD.Remove() != 0)
@@ -352,7 +353,7 @@ namespace SAPHelper
 
         public static bool ExisteColuna(string nome_tabela, string nome_campo)
         {
-            SAPbobsCOM.Recordset rs = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
+            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
             var sql = $"SELECT COUNT(*) FROM CUFD (NOLOCK) WHERE TableID='{nome_tabela}' and AliasID='{nome_campo}'";
 
             rs.DoQuery(sql);
@@ -385,9 +386,9 @@ namespace SAPHelper
             else
             {
                 GC.Collect();
-                SAPbobsCOM.UserFieldsMD objUserFieldsMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserFields);
+                UserFieldsMD objUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
                 objUserFieldsMD.GetByKey(nome_tabela, campoID);
-                SAPbobsCOM.ValidValuesMD oValidValues;
+                ValidValuesMD oValidValues;
                 oValidValues = objUserFieldsMD.ValidValues;
 
                 var error_code = 0;
@@ -428,13 +429,13 @@ namespace SAPHelper
         public static bool SetarCampoComoObrigatorio(string nome_tabela, string nome_campo)
         {
             int campoID = GetFieldId(nome_tabela, nome_campo);
-            SAPbobsCOM.UserFieldsMD objUserFieldsMD;
+            UserFieldsMD objUserFieldsMD;
             GC.Collect();
-            objUserFieldsMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserFields);
+            objUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
 
             if (objUserFieldsMD.GetByKey(nome_tabela, campoID))
             {
-                objUserFieldsMD.Mandatory = SAPbobsCOM.BoYesNoEnum.tYES;
+                objUserFieldsMD.Mandatory = BoYesNoEnum.tYES;
 
                 if (objUserFieldsMD.Update() != 0)
                 {
@@ -458,8 +459,8 @@ namespace SAPHelper
             if (valorExiste && (ExisteValorPadraoSetado(nome_tabela, campoID, valor)) == false)
             {
                 GC.Collect();
-                SAPbobsCOM.UserFieldsMD objUserFieldsMD;
-                objUserFieldsMD = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserFields);
+                UserFieldsMD objUserFieldsMD;
+                objUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
 
                 if (objUserFieldsMD.GetByKey(nome_tabela, campoID))
                     objUserFieldsMD.DefaultValue = valor;
@@ -483,7 +484,7 @@ namespace SAPHelper
 
         public static bool ExisteValorValido(string nome_tabela, int campoID, string valor)
         {
-            SAPbobsCOM.Recordset rs = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
+            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql =
                 $@"SELECT COUNT(*) FROM UFD1 (NOLOCK) 
                     WHERE TableID='{nome_tabela}' AND
@@ -503,7 +504,7 @@ namespace SAPHelper
 
         public static bool ExisteValorPadraoSetado(string nome_tabela, int campoID, string valor)
         {
-            SAPbobsCOM.Recordset rs = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
+            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql = $@"SELECT COUNT(*) FROM CUFD (NOLOCK) 
             Where TableID='{nome_tabela}' AND
                   FieldID='{campoID}' AND
@@ -529,7 +530,7 @@ namespace SAPHelper
 
         public static int GetFieldId(string nome_tabela, string nome_campo)
         {
-            SAPbobsCOM.Recordset rs = _company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
+            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql = $@" SELECT FieldID FROM CUFD (NOLOCK)  WHERE TableID='{nome_tabela}' AND AliasID='{nome_campo}'";
             rs.DoQuery(sql);
             if (rs.Fields.Item(0).Value >= 0)
@@ -548,7 +549,7 @@ namespace SAPHelper
 
         #region :: Outros
 
-        public static void RecebeCompany(SAPbobsCOM.Company company)
+        public static void RecebeCompany(Company company)
         {
             _company = company;
         }

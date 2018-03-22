@@ -60,6 +60,10 @@
     <Compile Include="Database\Tabela\TabelaUDO.cs" />
     <Compile Include="Database\Tabela\UDOParams.cs" />
     <Compile Include="Dialogs\Dialogs.cs" />
+    <Compile Include="Enums\Enums.cs" />
+    <Compile Include="Events\Events.cs" />
+    <Compile Include="Forms\Form.cs" />
+    <Compile Include="Forms\FormEvents.cs" />
     <Compile Include="Menu\Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
