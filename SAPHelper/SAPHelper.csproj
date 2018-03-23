@@ -64,6 +64,7 @@
     <Compile Include="Events\Events.cs" />
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\FormEvents.cs" />
+    <Compile Include="Forms\MapEventsToForms.cs" />
     <Compile Include="Menu\Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

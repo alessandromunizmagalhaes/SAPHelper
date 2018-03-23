@@ -1,12 +1,14 @@
-﻿namespace SAPHelper
+﻿using SAPbouiCOM;
+
+namespace SAPHelper
 {
     public static class Dialogs
     {
-        public static SAPbouiCOM.Application SBOApplication;
+        public static Application SBOApplication;
 
-        public static void Info(string msg)
+        public static void Info(string msg, BoMessageTime messageTime = BoMessageTime.bmt_Short)
         {
-            BarMessage(msg, SAPbouiCOM.BoStatusBarMessageType.smt_Warning);
+            BarMessage(msg, BoStatusBarMessageType.smt_Warning);
         }
 
         public static void PopupInfo(string msg)
@@ -15,9 +17,9 @@
             SBOApplication.MessageBox(msg);
         }
 
-        public static void Success(string msg)
+        public static void Success(string msg, BoMessageTime messageTime = BoMessageTime.bmt_Short)
         {
-            BarMessage(msg, SAPbouiCOM.BoStatusBarMessageType.smt_Success);
+            BarMessage(msg, BoStatusBarMessageType.smt_Success);
         }
 
         public static void PopupSuccess(string msg)
@@ -28,10 +30,10 @@
 
         public static void Error(string msg)
         {
-            BarMessage(msg, SAPbouiCOM.BoStatusBarMessageType.smt_Error);
+            BarMessage(msg, BoStatusBarMessageType.smt_Error);
         }
 
-        public static void PopupError(string msg)
+        public static void PopupError(string msg, BoMessageTime messageTime = BoMessageTime.bmt_Short)
         {
             Error(msg);
             SBOApplication.MessageBox(msg);
@@ -42,12 +44,12 @@
             return SBOApplication.MessageBox(msg, 1, "Sim", "Não") == 1;
         }
 
-        private static void BarMessage(string msg, SAPbouiCOM.BoStatusBarMessageType type)
+        private static void BarMessage(string message, BoStatusBarMessageType messageType, BoMessageTime messageTime = BoMessageTime.bmt_Short)
         {
-            SBOApplication.StatusBar.SetText(msg, SAPbouiCOM.BoMessageTime.bmt_Short, type);
+            SBOApplication.StatusBar.SetText(message, messageTime, messageType);
         }
 
-        public static void RecebeSBOApplication(SAPbouiCOM.Application application)
+        public static void RecebeSBOApplication(Application application)
         {
             SBOApplication = application;
         }
