@@ -9,16 +9,19 @@ namespace SAPHelper
         public static SAPbobsCOM.Company oCompany;
 
         public delegate void SBOApplicationHandler(SAPbouiCOM.Application SBOApplication);
-        public delegate void CompanyHandler(SAPbobsCOM.Company Company);
+        public static SBOApplicationHandler applicationHandler;
 
-        public static void Connect(SBOApplicationHandler applicationHandler, CompanyHandler companyHandler)
+        public delegate void CompanyHandler(SAPbobsCOM.Company Company);
+        public static CompanyHandler companyHandler;
+
+        public static void Connect()
         {
-            SetApplication(applicationHandler);
+            SetApplication();
 
             //Dialogs.Info(":: " + addonName + " :: Iniciando ...");
 
             //Dialogs.Info(":: " + addonName + " :: Conectando com DI API ...");
-            if (SetConnectionContext(companyHandler) != 0)
+            if (SetConnectionContext() != 0)
             {
                 //Dialogs.Error(":: " + addonName + " :: Falha ao conectar com DI API ", true);
             }
@@ -30,7 +33,7 @@ namespace SAPHelper
             }
         }
 
-        private static void SetApplication(SBOApplicationHandler applicationHandler)
+        private static void SetApplication()
         {
             SboGuiApi sboGuiApi;
             string connectionString = null;
@@ -58,7 +61,7 @@ namespace SAPHelper
             applicationHandler(SBOApplication);
         }
 
-        private static int SetConnectionContext(CompanyHandler companyHandler)
+        private static int SetConnectionContext()
         {
             string cookie;
             string connectionContext = "";

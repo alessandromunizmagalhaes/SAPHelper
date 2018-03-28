@@ -6,8 +6,6 @@ namespace SAPHelper
 {
     public static class Database
     {
-        private static Company _company;
-
         #region :: Gestão de Tabelas
 
         public static void CriarTabela(Tabela tabela)
@@ -41,46 +39,38 @@ namespace SAPHelper
                 // regras SAP, senão vc não consegue adicionar o UDO via DI.
                 if (tabela_is_UDO)
                 {
-                    DefinirTabelaComoUDO(tabelaUDO);
+                    GC.Collect();
+                    UserObjectsMD objUserObjectMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
 
-                    DefinirColunasComoUDO(tabela.NomeSemArroba, tabela.Colunas, true);
+                    DefinirTabelaComoUDO(objUserObjectMD, tabelaUDO);
 
-                    DefinirTabelasComoFilhasDoUDO(tabela.NomeSemArroba, tabelaUDO.TabelasFilhas);
+                    DefinirColunasComoUDO(objUserObjectMD, tabela.NomeSemArroba, tabela.Colunas, true);
+
+                    DefinirTabelasComoFilhasDoUDO(objUserObjectMD, tabela.NomeSemArroba, tabelaUDO.TabelasFilhas);
+
+                    if (objUserObjectMD.Add() != 0)
+                    {
+                        throw new DatabaseException($"Erro ao tentar criar a tabela {tabela.NomeSemArroba} como UDO.\nErro: {Global.Company.GetLastErrorDescription()}");
+                    }
+
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(objUserObjectMD);
+                    objUserObjectMD = null;
+                    GC.Collect();
                 }
             }
         }
 
-        private static void DefinirTabelasComoFilhasDoUDO(string nomeTabelaPai, List<Tabela> tabelasFilhas)
+        private static void DefinirTabelasComoFilhasDoUDO(UserObjectsMD objUserObjectMD, string nomeTabelaPai, List<Tabela> tabelasFilhas)
         {
-            GC.Collect();
-            UserObjectsMD objUserObjectMD = _company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
-            if (objUserObjectMD.GetByKey(nomeTabelaPai))
+            foreach (var tabelaFilha in tabelasFilhas)
             {
-                // tem que percorrer denovo todas as tabelas filhas, para seta-las como filhas.
-                // não dá pra aproveitar o for lá encima, no momento que o for lá emcima é executado, o UDO pai não existe,
-                // então quando vai fazer GETBYKEY() com o nome do pai, sempre retorna false.
-                foreach (var tabelaFilha in tabelasFilhas)
-                {
-                    objUserObjectMD.ChildTables.TableName = tabelaFilha.NomeSemArroba;
-                    objUserObjectMD.ChildTables.Add();
-                }
-
-                if (objUserObjectMD.Update() != 0)
-                {
-                    throw new DatabaseException($"Erro ao tentar adicionar as tabela filhas da tabela {nomeTabelaPai} que é UDO.\nErro: {_company.GetLastErrorDescription()}");
-                }
+                objUserObjectMD.ChildTables.TableName = tabelaFilha.NomeSemArroba;
+                objUserObjectMD.ChildTables.Add();
             }
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(objUserObjectMD);
-            objUserObjectMD = null;
-            GC.Collect();
         }
 
-        private static void DefinirTabelaComoUDO(TabelaUDO tabela)
+        private static void DefinirTabelaComoUDO(UserObjectsMD objUserObjectMD, TabelaUDO tabela)
         {
-            GC.Collect();
-            UserObjectsMD objUserObjectMD = _company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
-
             objUserObjectMD.TableName = tabela.NomeSemArroba;
             objUserObjectMD.Name = tabela.NomeSemArroba;
             objUserObjectMD.Code = tabela.NomeSemArroba;
@@ -94,21 +84,12 @@ namespace SAPHelper
             objUserObjectMD.CanYearTransfer = tabela.CanYearTransfer;
             objUserObjectMD.ManageSeries = tabela.ManageSeries;
             objUserObjectMD.ObjectType = tabela.ObjectType;
-
-            if (objUserObjectMD.Add() != 0)
-            {
-                throw new DatabaseException($"Erro ao tentar criar a tabela {tabela.NomeSemArroba} como UDO.\nErro: {_company.GetLastErrorDescription()}");
-            }
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(objUserObjectMD);
-            objUserObjectMD = null;
-            GC.Collect();
         }
 
         private static void CriarUserTable(Tabela tabela)
         {
             GC.Collect();
-            UserTablesMD oUserTablesMD = _company.GetBusinessObject(BoObjectTypes.oUserTables);
+            UserTablesMD oUserTablesMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserTables);
 
             oUserTablesMD.TableName = tabela.NomeSemArroba;
             oUserTablesMD.TableDescription = tabela.Descricao;
@@ -116,7 +97,7 @@ namespace SAPHelper
 
             if (oUserTablesMD.Add() != 0)
             {
-                throw new DatabaseException($"Erro ao tentar criar a tabela {tabela.NomeComArroba}.\nErro: {_company.GetLastErrorDescription()}");
+                throw new DatabaseException($"Erro ao tentar criar a tabela {tabela.NomeComArroba}.\nErro: {Global.Company.GetLastErrorDescription()}");
             }
 
             oUserTablesMD = null;
@@ -126,24 +107,24 @@ namespace SAPHelper
         public static void ExcluirTabela(string nomeSemArroba)
         {
             GC.Collect();
-            UserObjectsMD oUDO = _company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
+            UserObjectsMD oUDO = Global.Company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
 
             if (oUDO.GetByKey(nomeSemArroba))
             {
                 if (oUDO.Remove() != 0)
-                    throw new DatabaseException($"Erro ao tentar remover a definição de UDO da tabela {nomeSemArroba}.\nErro: {_company.GetLastErrorDescription()}");
+                    throw new DatabaseException($"Erro ao tentar remover a definição de UDO da tabela {nomeSemArroba}.\nErro: {Global.Company.GetLastErrorDescription()}");
             }
 
             System.Runtime.InteropServices.Marshal.ReleaseComObject(oUDO);
             oUDO = null;
 
-            UserTablesMD objUserTablesMD = _company.GetBusinessObject(BoObjectTypes.oUserTables);
+            UserTablesMD objUserTablesMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserTables);
             if (objUserTablesMD.GetByKey(nomeSemArroba))
             {
                 objUserTablesMD.TableName = nomeSemArroba;
 
                 if (objUserTablesMD.Remove() != 0)
-                    throw new DatabaseException($"Erro ao tentar remover a tabela {nomeSemArroba}.\nErro: {_company.GetLastErrorDescription()}");
+                    throw new DatabaseException($"Erro ao tentar remover a tabela {nomeSemArroba}.\nErro: {Global.Company.GetLastErrorDescription()}");
             }
             else
             {
@@ -156,7 +137,7 @@ namespace SAPHelper
 
         public static bool ExisteTabela(string nome_tabela)
         {
-            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
+            Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql = "SELECT COUNT(*) FROM OUTB WHERE TableName = '" + nome_tabela + "'";
             rs.DoQuery(sql);
 
@@ -212,46 +193,30 @@ namespace SAPHelper
         /// sempre que for o primeiro, inventa uma coluna ficticia e passa o Code.
         /// horroroso mas é o jeito.
         /// </param>
-        public static void DefinirColunasComoUDO(string nome_tabela, List<Coluna> colunas, bool criar_campo_code_antes = false)
+        public static void DefinirColunasComoUDO(UserObjectsMD objUserObjectMD, string nome_tabela, List<Coluna> colunas, bool criar_campo_code_antes = false)
         {
-            GC.Collect();
-            UserObjectsMD objUserObjectMD = _company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
-            if (objUserObjectMD.GetByKey(nome_tabela))
+            // quando se está criando uma nova tabela
+            // tem que fazer essa gambiarra horrível, porque o primeiro elemento a ser colocado como UDO,
+            // tem que obrigatóriamente ser o campo CODE.
+            // como eu não passo ele como um campo que eu quero usar na definição de Lista de Colunas da minha Tabela
+            // sempre que for o primeiro, inventa uma coluna ficticia e passa o Code.
+            // horroroso mas é o jeito.
+            if (criar_campo_code_antes)
             {
-                int i = 1;
-                foreach (var coluna in colunas)
-                {
-                    // quando se está criando uma nova tabela
-                    // tem que fazer essa gambiarra horrível, porque o primeiro elemento a ser colocado como UDO,
-                    // tem que obrigatóriamente ser o campo CODE.
-                    // como eu não passo ele como um campo que eu quero usar na definição de Lista de Colunas da minha Tabela
-                    // sempre que for o primeiro, inventa uma coluna ficticia e passa o Code.
-                    // horroroso mas é o jeito.
-                    if (criar_campo_code_antes && i == 1)
-                    {
-                        AdicionarFindColumnsAoObjeto(objUserObjectMD, new ColunaVarchar("Code", "Código", 0, false));
-                    }
-
-                    AdicionarFindColumnsAoObjeto(objUserObjectMD, coluna);
-
-                    i++;
-                }
-
-                if (objUserObjectMD.Update() != 0)
-                {
-                    throw new DatabaseException($"Erro ao tentar criar as colunas da tabela {nome_tabela} como UDO.\nErro: {_company.GetLastErrorDescription()}");
-                }
+                AdicionarFindColumnsAoObjeto(objUserObjectMD, new ColunaVarchar("Code", "Código", 0, false));
+                AdicionarFindColumnsAoObjeto(objUserObjectMD, new ColunaVarchar("Name", "Descrição", 0, false));
             }
 
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(objUserObjectMD);
-            objUserObjectMD = null;
-            GC.Collect();
+            foreach (var coluna in colunas)
+            {
+                AdicionarFindColumnsAoObjeto(objUserObjectMD, coluna);
+            }
         }
 
         private static void CriarUserField(string nome_tabela, Coluna coluna)
         {
             GC.Collect();
-            UserFieldsMD objUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
+            UserFieldsMD objUserFieldsMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserFields);
             objUserFieldsMD.TableName = nome_tabela;
             objUserFieldsMD.Name = coluna.Nome;
             objUserFieldsMD.Description = coluna.Descricao;
@@ -308,6 +273,19 @@ namespace SAPHelper
                 objUserFieldsMD.SubType = BoFldSubTypes.st_Image;
             }
 
+            if (!String.IsNullOrEmpty(coluna.TabelaNoObjectVinculada))
+            {
+                objUserFieldsMD.LinkedTable = coluna.TabelaNoObjectVinculada;
+            }
+            else if (!String.IsNullOrEmpty(coluna.TabelaUDOVinculada))
+            {
+                objUserFieldsMD.LinkedUDO = coluna.TabelaUDOVinculada;
+            }
+            else if (coluna.TabelaSistemaVinculada != BoObjectTypes.BoRecordset)
+            {
+                objUserFieldsMD.LinkedSystemObject = coluna.TabelaSistemaVinculada;
+            }
+
             if (coluna.Tamanho > 0)
             {
                 objUserFieldsMD.EditSize = coluna.Tamanho;
@@ -316,7 +294,7 @@ namespace SAPHelper
 
             if (objUserFieldsMD.Add() != 0)
             {
-                throw new DatabaseException($"Erro ao tentar criar o campo {coluna.Nome}.\nErro: {_company.GetLastErrorDescription()}");
+                throw new DatabaseException($"Erro ao tentar criar o campo {coluna.Nome}.\nErro: {Global.Company.GetLastErrorDescription()}");
             }
 
             System.Runtime.InteropServices.Marshal.ReleaseComObject(objUserFieldsMD);
@@ -330,18 +308,25 @@ namespace SAPHelper
             objUserObjectMD.FindColumns.Add();
         }
 
+        private static void AdicionarFormColumnsAoObjeto(UserObjectsMD objUserObjectMD, Coluna coluna)
+        {
+            objUserObjectMD.FormColumns.FormColumnAlias = coluna.Nome;
+            objUserObjectMD.FormColumns.FormColumnDescription = coluna.Descricao;
+            objUserObjectMD.FormColumns.Add();
+        }
+
         public static void ExcluirColuna(string nome_tabela, string nome_campo)
         {
             int FieldId = GetFieldId(nome_tabela, nome_campo);
 
             GC.Collect();
-            UserFieldsMD oUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
+            UserFieldsMD oUserFieldsMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserFields);
             if (oUserFieldsMD.GetByKey(nome_tabela, FieldId))
             {
                 if (oUserFieldsMD.Remove() != 0)
                 {
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(oUserFieldsMD);
-                    throw new DatabaseException($"Erro ao tentar remover o campo {nome_campo} da tabela {nome_tabela}.\nErro: {_company.GetLastErrorDescription()}");
+                    throw new DatabaseException($"Erro ao tentar remover o campo {nome_campo} da tabela {nome_tabela}.\nErro: {Global.Company.GetLastErrorDescription()}");
                 }
             }
             else
@@ -353,7 +338,7 @@ namespace SAPHelper
 
         public static bool ExisteColuna(string nome_tabela, string nome_campo)
         {
-            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
+            Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             var sql = $"SELECT COUNT(*) FROM CUFD (NOLOCK) WHERE TableID='{nome_tabela}' and AliasID='{nome_campo}'";
 
             rs.DoQuery(sql);
@@ -386,7 +371,7 @@ namespace SAPHelper
             else
             {
                 GC.Collect();
-                UserFieldsMD objUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
+                UserFieldsMD objUserFieldsMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserFields);
                 objUserFieldsMD.GetByKey(nome_tabela, campoID);
                 ValidValuesMD oValidValues;
                 oValidValues = objUserFieldsMD.ValidValues;
@@ -412,7 +397,7 @@ namespace SAPHelper
 
                     if (error_code != 0)
                     {
-                        throw new DatabaseException($"Erro ao tentar adicionar valor válido {valor} na coluna {nome_campo} na tabela {nome_tabela}.\nErro: {_company.GetLastErrorDescription()}");
+                        throw new DatabaseException($"Erro ao tentar adicionar valor válido {valor} na coluna {nome_campo} na tabela {nome_tabela}.\nErro: {Global.Company.GetLastErrorDescription()}");
                     }
                 }
                 else
@@ -420,7 +405,7 @@ namespace SAPHelper
                     error_code = objUserFieldsMD.Update();
                     if (error_code != 0)
                     {
-                        throw new DatabaseException($"Erro ao tentar atualizar valor válido {valor} na coluna {nome_campo} na tabela {nome_tabela}.\nErro: {_company.GetLastErrorDescription()}");
+                        throw new DatabaseException($"Erro ao tentar atualizar valor válido {valor} na coluna {nome_campo} na tabela {nome_tabela}.\nErro: {Global.Company.GetLastErrorDescription()}");
                     }
                 }
             }
@@ -431,7 +416,7 @@ namespace SAPHelper
             int campoID = GetFieldId(nome_tabela, nome_campo);
             UserFieldsMD objUserFieldsMD;
             GC.Collect();
-            objUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
+            objUserFieldsMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserFields);
 
             if (objUserFieldsMD.GetByKey(nome_tabela, campoID))
             {
@@ -439,7 +424,7 @@ namespace SAPHelper
 
                 if (objUserFieldsMD.Update() != 0)
                 {
-                    throw new DatabaseException($"Erro ao tentar tornar o campo {nome_campo} da tabela {nome_tabela} obrigatório.\nErro: {_company.GetLastErrorDescription()}");
+                    throw new DatabaseException($"Erro ao tentar tornar o campo {nome_campo} da tabela {nome_tabela} obrigatório.\nErro: {Global.Company.GetLastErrorDescription()}");
                 }
             }
             return true;
@@ -460,7 +445,7 @@ namespace SAPHelper
             {
                 GC.Collect();
                 UserFieldsMD objUserFieldsMD;
-                objUserFieldsMD = _company.GetBusinessObject(BoObjectTypes.oUserFields);
+                objUserFieldsMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserFields);
 
                 if (objUserFieldsMD.GetByKey(nome_tabela, campoID))
                     objUserFieldsMD.DefaultValue = valor;
@@ -468,7 +453,7 @@ namespace SAPHelper
                 if (objUserFieldsMD.Update() != 0)
                 {
                     objUserFieldsMD = null;
-                    throw new DatabaseException($"Erro ao tentar setar o valor padrão {valor} para o campo {nome_campo} da tabela {nome_tabela}.\nErro: {_company.GetLastErrorDescription()}");
+                    throw new DatabaseException($"Erro ao tentar setar o valor padrão {valor} para o campo {nome_campo} da tabela {nome_tabela}.\nErro: {Global.Company.GetLastErrorDescription()}");
                 }
                 else
                 {
@@ -484,7 +469,7 @@ namespace SAPHelper
 
         public static bool ExisteValorValido(string nome_tabela, int campoID, string valor)
         {
-            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
+            Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql =
                 $@"SELECT COUNT(*) FROM UFD1 (NOLOCK) 
                     WHERE TableID='{nome_tabela}' AND
@@ -504,7 +489,7 @@ namespace SAPHelper
 
         public static bool ExisteValorPadraoSetado(string nome_tabela, int campoID, string valor)
         {
-            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
+            Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql = $@"SELECT COUNT(*) FROM CUFD (NOLOCK) 
             Where TableID='{nome_tabela}' AND
                   FieldID='{campoID}' AND
@@ -530,7 +515,7 @@ namespace SAPHelper
 
         public static int GetFieldId(string nome_tabela, string nome_campo)
         {
-            Recordset rs = _company.GetBusinessObject(BoObjectTypes.BoRecordset);
+            Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql = $@" SELECT FieldID FROM CUFD (NOLOCK)  WHERE TableID='{nome_tabela}' AND AliasID='{nome_campo}'";
             rs.DoQuery(sql);
             if (rs.Fields.Item(0).Value >= 0)
@@ -546,14 +531,5 @@ namespace SAPHelper
 
         #endregion
 
-
-        #region :: Outros
-
-        public static void RecebeCompany(Company company)
-        {
-            _company = company;
-        }
-
-        #endregion
     }
 }
