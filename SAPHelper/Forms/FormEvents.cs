@@ -7,6 +7,7 @@ namespace SAPHelper
     public static class FormEvents
     {
         private static readonly Dictionary<string, Type> _mappedEventToForms = new Dictionary<string, Type>() { };
+        internal static readonly Dictionary<EventosInternos, Dictionary<string, Type>> _mappedInternalEventsToFormTypes = new Dictionary<EventosInternos, Dictionary<string, Type>>() { };
 
         public static void DeclararEventos(EventFilters eventFilters, List<MapEventsToForms> mappedEventsToForms)
         {
@@ -137,6 +138,24 @@ namespace SAPHelper
                     $@"Erro interno. Erro ao lidar com Evento de Item.
                     Erro: {e.Message}"
                     );
+            }
+        }
+
+        public static void DeclararEventosInternos(EventosInternos eventoInterno, Form form)
+        {
+            DeclararEventosInternos(eventoInterno, new List<Form>() { form });
+        }
+
+        public static void DeclararEventosInternos(EventosInternos eventoInterno, List<Form> forms)
+        {
+            if (!_mappedInternalEventsToFormTypes.ContainsKey(eventoInterno))
+            {
+                _mappedInternalEventsToFormTypes.Add(eventoInterno, new Dictionary<string, Type>() { });
+            }
+
+            foreach (var form in forms)
+            {
+                _mappedInternalEventsToFormTypes[eventoInterno].Add(form.FormType, form.GetType());
             }
         }
     }

@@ -1,5 +1,10 @@
 ﻿namespace SAPHelper
 {
+    public enum EventosInternos
+    {
+        AdicionarNovo = 1282,
+    }
+
     public static class Events
     {
         public static bool Antes(SAPbouiCOM.BusinessObjectInfo pVal)

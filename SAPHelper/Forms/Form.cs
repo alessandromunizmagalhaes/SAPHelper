@@ -34,6 +34,7 @@ namespace SAPHelper
 
         #endregion
 
+
         #region :: Form Visible
 
         public virtual void OnBeforeFormVisible(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
@@ -91,6 +92,15 @@ namespace SAPHelper
         #endregion
 
 
+        #region :: Eventos Internos
+
+        public virtual void _OnAdicionarNovo(SAPbouiCOM.Form form)
+        {
+        }
+
+        #endregion
+
+
         #region :: Utils
 
         protected SAPbouiCOM.Form GetForm(ItemEvent pVal)
@@ -121,7 +131,7 @@ namespace SAPHelper
 	                    END as ultimo"
             );
 
-            return rs.Fields.Item(0).Value;
+            return rs.Fields.Item(0).Value.ToString();
         }
 
         protected void PopularComboBox(SAPbouiCOM.Form form, string comboUID, string sql = "")
