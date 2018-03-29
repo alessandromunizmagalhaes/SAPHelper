@@ -15,6 +15,10 @@ namespace SAPHelper
             TabelaSistemaVinculada = tabelaSistemaVinculada;
         }
 
+        public string NomeComU_NaFrente
+        {
+            get { return "U_" + Nome; }
+        }
         public string Nome { get; set; }
         public string Descricao { get; set; }
         public bool Obrigatoria { get; set; } = false;

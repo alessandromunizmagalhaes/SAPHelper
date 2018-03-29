@@ -1,0 +1,37 @@
+﻿using SAPbobsCOM;
+using System;
+namespace SAPHelper
+{
+    public static class Helpers
+    {
+        public static string DateToString(DateTime date)
+        {
+            return date.ToString("yyyyMMdd");
+        }
+
+        public static DateTime StringToDate(string date)
+        {
+            SBObob sBObob = GetSBOBob();
+            return sBObob.Format_StringToDate(date).Fields.Item(0).Value;
+        }
+
+        private static SBObob GetSBOBob()
+        {
+            return Global.Company.GetBusinessObject(BoObjectTypes.BoBridge);
+        }
+
+        public static Recordset GetRecordset()
+        {
+            return Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
+        }
+
+        public static Recordset DoQuery(string sql)
+        {
+            var rs = GetRecordset();
+            rs.DoQuery(sql);
+            return rs;
+        }
+
+
+    }
+}

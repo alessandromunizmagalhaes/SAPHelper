@@ -42,13 +42,16 @@ namespace SAPHelper
                         var oXMLDoc = new XmlDocument();
                         oXMLDoc.Load(sfr_path);
                         creationPackage.XmlData = oXMLDoc.InnerXml;
+
+                        creationPackage.UniqueID = Guid.NewGuid().ToString("N");//pVal.MenuUID + DateTime.Now.Minute.ToString();
+
                         SAPbouiCOM.Form oForm = Global.SBOApplication.Forms.AddEx(creationPackage);
 
                         oForm.Visible = true;
                     }
                     catch (Exception e)
                     {
-                        Dialogs.PopupError($"Erro ao abrir o formulário {pVal.MenuUID}");
+                        Dialogs.PopupError($"Erro ao abrir o formulário {pVal.MenuUID}.\nErro: " + e.Message);
                     }
                 }
                 else

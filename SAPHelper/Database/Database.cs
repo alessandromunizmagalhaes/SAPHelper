@@ -50,6 +50,9 @@ namespace SAPHelper
 
                     if (objUserObjectMD.Add() != 0)
                     {
+                        System.Runtime.InteropServices.Marshal.ReleaseComObject(objUserObjectMD);
+                        objUserObjectMD = null;
+                        GC.Collect();
                         throw new DatabaseException($"Erro ao tentar criar a tabela {tabela.NomeSemArroba} como UDO.\nErro: {Global.Company.GetLastErrorDescription()}");
                     }
 
@@ -203,13 +206,13 @@ namespace SAPHelper
             // horroroso mas é o jeito.
             if (criar_campo_code_antes)
             {
-                AdicionarFindColumnsAoObjeto(objUserObjectMD, new ColunaVarchar("Code", "Código", 0, false));
-                AdicionarFindColumnsAoObjeto(objUserObjectMD, new ColunaVarchar("Name", "Descrição", 0, false));
+                AdicionarFindColumnsAoObjeto(objUserObjectMD, "Code", "Código");
+                AdicionarFindColumnsAoObjeto(objUserObjectMD, "Name", "Descrição");
             }
 
             foreach (var coluna in colunas)
             {
-                AdicionarFindColumnsAoObjeto(objUserObjectMD, coluna);
+                AdicionarFindColumnsAoObjeto(objUserObjectMD, coluna.NomeComU_NaFrente, coluna.Descricao);
             }
         }
 
@@ -301,17 +304,17 @@ namespace SAPHelper
             objUserFieldsMD = null;
         }
 
-        private static void AdicionarFindColumnsAoObjeto(UserObjectsMD objUserObjectMD, Coluna coluna)
+        private static void AdicionarFindColumnsAoObjeto(UserObjectsMD objUserObjectMD, string nome_coluna, string descricao_coluna)
         {
-            objUserObjectMD.FindColumns.ColumnAlias = coluna.Nome;
-            objUserObjectMD.FindColumns.ColumnDescription = coluna.Descricao;
+            objUserObjectMD.FindColumns.ColumnAlias = nome_coluna;
+            objUserObjectMD.FindColumns.ColumnDescription = descricao_coluna;
             objUserObjectMD.FindColumns.Add();
         }
 
-        private static void AdicionarFormColumnsAoObjeto(UserObjectsMD objUserObjectMD, Coluna coluna)
+        private static void AdicionarFormColumnsAoObjeto(UserObjectsMD objUserObjectMD, string nome_coluna, string descricao_coluna)
         {
-            objUserObjectMD.FormColumns.FormColumnAlias = coluna.Nome;
-            objUserObjectMD.FormColumns.FormColumnDescription = coluna.Descricao;
+            objUserObjectMD.FormColumns.FormColumnAlias = nome_coluna;
+            objUserObjectMD.FormColumns.FormColumnDescription = descricao_coluna;
             objUserObjectMD.FormColumns.Add();
         }
 
