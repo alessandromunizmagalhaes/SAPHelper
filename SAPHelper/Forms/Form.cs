@@ -7,6 +7,63 @@ namespace SAPHelper
 
         public abstract string FormType { get; }
 
+        #region :: Form Data Add
+
+        public virtual void OnBeforeFormDataAdd(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterFormDataAdd(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
+        #region :: Form Data Update
+
+        public virtual void OnBeforeFormDataUpdate(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterFormDataUpdate(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
+        #region :: Form Data Delete
+
+        public virtual void OnBeforeFormDataDelete(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterFormDataDelete(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
+
+        #region :: Form Data Load
+
+        public virtual void OnBeforeFormDataLoad(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterFormDataLoad(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
         #region :: Form Load
 
         public virtual void OnBeforeFormLoad(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
@@ -129,6 +186,10 @@ namespace SAPHelper
         {
         }
 
+        public virtual void _OnPesquisar(SAPbouiCOM.Form form)
+        {
+        }
+
         #endregion
 
 
@@ -139,12 +200,23 @@ namespace SAPHelper
             return Global.SBOApplication.Forms.Item(pVal.FormUID);
         }
 
+        protected SAPbouiCOM.Form GetForm(BusinessObjectInfo pVal)
+        {
+            return Global.SBOApplication.Forms.Item(pVal.FormUID);
+        }
+
         protected DBDataSource GetDBDatasource(SAPbouiCOM.Form form, string dbdts_name)
         {
             return form.DataSources.DBDataSources.Item(dbdts_name);
         }
 
         protected DBDataSource GetDBDatasource(ItemEvent pVal, string dbdts_name)
+        {
+            SAPbouiCOM.Form form = GetForm(pVal);
+            return form.DataSources.DBDataSources.Item(dbdts_name);
+        }
+
+        protected DBDataSource GetDBDatasource(BusinessObjectInfo pVal, string dbdts_name)
         {
             SAPbouiCOM.Form form = GetForm(pVal);
             return form.DataSources.DBDataSources.Item(dbdts_name);
@@ -204,6 +276,23 @@ namespace SAPHelper
             }
         }
 
+        protected void ValidarCamposObrigatorios(DBDataSource dbdts)
+        {
+            var props = GetType().GetFields();
+            foreach (var prop in props)
+            {
+                if (prop.FieldType == typeof(ItemFormObrigatorio))
+                {
+                    var propriedade = (ItemFormObrigatorio)prop.GetValue(this);
+                    var valor = dbdts.GetValue(propriedade.Datasource, 0).Trim();
+
+                    if (string.IsNullOrEmpty(valor))
+                    {
+                        throw new FormValidationException(propriedade.Mensagem, propriedade.ItemUID);
+                    }
+                }
+            }
+        }
 
         #endregion
     }

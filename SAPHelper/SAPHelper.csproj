@@ -64,7 +64,9 @@
     <Compile Include="Events\Events.cs" />
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\FormEvents.cs" />
+    <Compile Include="Forms\FormValidationException.cs" />
     <Compile Include="Forms\ItemForm.cs" />
+    <Compile Include="Forms\ItemFormObrigatorio.cs" />
     <Compile Include="Forms\MapEventsToForms.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Helpers\Helpers.cs" />

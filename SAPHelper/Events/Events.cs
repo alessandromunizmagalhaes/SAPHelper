@@ -3,6 +3,7 @@
     public enum EventosInternos
     {
         AdicionarNovo = 1282,
+        Pesquisar = 1281,
     }
 
     public static class Events

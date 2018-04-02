@@ -220,5 +220,90 @@ namespace SAPHelper
                 _mappedInternalEventsToFormTypes[eventoInterno].Add(form.FormType, form.GetType());
             }
         }
+
+        public static void FormDataEvent(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+
+            try
+            {
+                if (_mappedEventToForms.ContainsKey(BusinessObjectInfo.FormTypeEx))
+                {
+                    var FormObjType = Activator.CreateInstance(_mappedEventToForms[BusinessObjectInfo.FormTypeEx]);
+
+                    #region :: FORM_DATA_ADD
+
+                    if (BusinessObjectInfo.EventType == BoEventTypes.et_FORM_DATA_ADD)
+                    {
+                        if (Events.Antes(BusinessObjectInfo))
+                        {
+                            ((Form)FormObjType).OnBeforeFormDataAdd(ref BusinessObjectInfo, out BubbleEvent);
+                        }
+                        else if (Events.Depois(BusinessObjectInfo) && BusinessObjectInfo.ActionSuccess)
+                        {
+                            ((Form)FormObjType).OnAfterFormDataAdd(ref BusinessObjectInfo, out BubbleEvent);
+                        }
+                    }
+
+                    #endregion
+
+                    #region :: FORM_DATA_UPDATE
+
+                    else if (BusinessObjectInfo.EventType == BoEventTypes.et_FORM_DATA_UPDATE)
+                    {
+                        if (Events.Antes(BusinessObjectInfo))
+                        {
+                            ((Form)FormObjType).OnBeforeFormDataUpdate(ref BusinessObjectInfo, out BubbleEvent);
+                        }
+                        else if (Events.Depois(BusinessObjectInfo) && BusinessObjectInfo.ActionSuccess)
+                        {
+                            ((Form)FormObjType).OnAfterFormDataUpdate(ref BusinessObjectInfo, out BubbleEvent);
+                        }
+                    }
+
+                    #endregion
+
+                    #region :: FORM_DATA_DELETE
+
+                    else if (BusinessObjectInfo.EventType == BoEventTypes.et_FORM_DATA_DELETE)
+                    {
+                        if (Events.Antes(BusinessObjectInfo))
+                        {
+                            ((Form)FormObjType).OnBeforeFormDataDelete(ref BusinessObjectInfo, out BubbleEvent);
+                        }
+                        else if (Events.Depois(BusinessObjectInfo) && BusinessObjectInfo.ActionSuccess)
+                        {
+                            ((Form)FormObjType).OnAfterFormDataDelete(ref BusinessObjectInfo, out BubbleEvent);
+                        }
+                    }
+
+                    #endregion
+
+                    #region :: FORM_DATA_LOAD
+
+                    else if (BusinessObjectInfo.EventType == BoEventTypes.et_FORM_DATA_LOAD)
+                    {
+                        if (Events.Antes(BusinessObjectInfo))
+                        {
+                            ((Form)FormObjType).OnBeforeFormDataLoad(ref BusinessObjectInfo, out BubbleEvent);
+                        }
+                        else if (Events.Depois(BusinessObjectInfo) && BusinessObjectInfo.ActionSuccess)
+                        {
+                            ((Form)FormObjType).OnAfterFormDataLoad(ref BusinessObjectInfo, out BubbleEvent);
+                        }
+                    }
+
+                    #endregion
+
+                }
+            }
+            catch (Exception e)
+            {
+                Dialogs.PopupError(
+                    $@"Erro interno. Erro ao lidar com Evento de Form Data.
+                    Erro: {e.Message}"
+                    );
+            }
+        }
     }
 }

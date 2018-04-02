@@ -37,6 +37,11 @@ namespace SAPHelper
             Global.SBOApplication.MessageBox(msg);
         }
 
+        public static void MessageBox(string msg)
+        {
+            Global.SBOApplication.MessageBox(msg);
+        }
+
         public static bool Confirm(string msg)
         {
             return Global.SBOApplication.MessageBox(msg, 1, "Sim", "Não") == 1;

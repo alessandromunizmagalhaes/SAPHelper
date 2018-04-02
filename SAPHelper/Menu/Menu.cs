@@ -61,7 +61,15 @@ namespace SAPHelper
                     if (form != null && FormEvents._mappedInternalEventsToFormTypes[eventoInterno].ContainsKey(form.TypeEx))
                     {
                         var formObjType = Activator.CreateInstance(FormEvents._mappedInternalEventsToFormTypes[eventoInterno][form.TypeEx]);
-                        ((SAPHelper.Form)formObjType)._OnAdicionarNovo(form);
+
+                        if (eventoInterno == EventosInternos.AdicionarNovo)
+                        {
+                            ((Form)formObjType)._OnAdicionarNovo(form);
+                        }
+                        else if (eventoInterno == EventosInternos.Pesquisar)
+                        {
+                            ((Form)formObjType)._OnPesquisar(form);
+                        }
                     }
                 }
             }
