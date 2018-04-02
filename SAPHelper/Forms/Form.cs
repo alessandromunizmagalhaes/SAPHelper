@@ -78,6 +78,37 @@ namespace SAPHelper
         #endregion
 
 
+
+        #region :: Combo Select
+
+
+        public virtual void OnBeforeComboSelect(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterComboSelect(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
+        #region :: Choose From List
+
+
+        public virtual void OnBeforeChooseFromList(SAPbouiCOM.Form form, ChooseFromListEvent chooseEvent, ChooseFromList choose, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterChooseFromList(SAPbouiCOM.Form form, ChooseFromListEvent chooseEvent, ChooseFromList choose, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
         #region :: Item Pressed
 
         public virtual void OnBeforeItemPressed(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
@@ -119,7 +150,7 @@ namespace SAPHelper
             return form.DataSources.DBDataSources.Item(dbdts_name);
         }
 
-        protected string GetNextPrimaryKey(string tabela_com_arroba, string campo = "Code")
+        protected string GetNextPrimaryKey(string tabela_com_arroba, string campo)
         {
             var rs = Helpers.DoQuery(
                 $@"SELECT 
@@ -134,18 +165,28 @@ namespace SAPHelper
             return rs.Fields.Item(0).Value.ToString();
         }
 
-        protected void PopularComboBox(SAPbouiCOM.Form form, string comboUID, string sql = "")
+        protected string GetNextCode(string tabela_com_arroba)
+        {
+            string next_code = GetNextPrimaryKey(tabela_com_arroba, "Code");
+
+            return next_code.PadLeft(4, '0');
+        }
+
+        protected void PopularComboBox(SAPbouiCOM.Form form, string comboUID, string sql)
         {
             ComboBox comboBox = ((ComboBox)form.Items.Item(comboUID).Specific);
             PopularComboBox(comboBox, sql);
         }
 
-        protected void PopularComboBox(ComboBox comboBox, string sql = "")
+        protected void PopularComboBox(ComboBox comboBox, string sql)
         {
-            comboBox.Item.DisplayDesc = true;
+            RemoverTodosValoresValidados(comboBox);
+            AcrescentarValoresValidados(comboBox, sql);
+        }
 
+        protected void AcrescentarValoresValidados(ComboBox comboBox, string sql)
+        {
             var rs = Helpers.DoQuery(sql);
-
             while (!rs.EoF)
             {
                 comboBox.ValidValues.Add(rs.Fields.Item(0).Value.ToString(), rs.Fields.Item(1).Value.ToString());
@@ -153,6 +194,16 @@ namespace SAPHelper
                 rs.MoveNext();
             }
         }
+
+        protected void RemoverTodosValoresValidados(ComboBox comboBox)
+        {
+            var count = comboBox.ValidValues.Count;
+            for (int i = 0; i < count; i++)
+            {
+                comboBox.ValidValues.Remove(0, BoSearchKey.psk_Index);
+            }
+        }
+
 
         #endregion
     }
