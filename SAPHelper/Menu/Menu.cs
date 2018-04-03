@@ -32,14 +32,14 @@ namespace SAPHelper
             BubbleEvent = true;
             int menuUID = 0;
 
-            if (Events.Depois(pVal) && pVal.MenuUID.Contains("Frm"))
+            if (Events.Depois(pVal) && pVal.MenuUID.Contains("Form"))
             {
                 string sfr_path = GetSRFPath(pVal);
                 if (File.Exists(sfr_path))
                 {
                     try
                     {
-                        CriarForm(sfr_path);
+                        Form.CriarForm(sfr_path);
                     }
                     catch (Exception e)
                     {
@@ -78,19 +78,6 @@ namespace SAPHelper
         private static string GetSRFPath(MenuEvent pVal)
         {
             return binFolder + "/" + pVal.MenuUID + ".srf";
-        }
-
-        private static void CriarForm(string sfr_path)
-        {
-            FormCreationParams creationPackage = Global.SBOApplication.CreateObject(BoCreatableObjectType.cot_FormCreationParams);
-
-            var oXMLDoc = new XmlDocument();
-            oXMLDoc.Load(sfr_path);
-            creationPackage.XmlData = oXMLDoc.InnerXml;
-            creationPackage.UniqueID = Guid.NewGuid().ToString("N");
-            SAPbouiCOM.Form oForm = Global.SBOApplication.Forms.AddEx(creationPackage);
-
-            oForm.Visible = true;
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using SAPbouiCOM;
+using System;
+using System.Xml;
 
 namespace SAPHelper
 {
@@ -292,6 +294,19 @@ namespace SAPHelper
                     }
                 }
             }
+        }
+
+        public static void CriarForm(string sfr_path)
+        {
+            FormCreationParams creationPackage = Global.SBOApplication.CreateObject(BoCreatableObjectType.cot_FormCreationParams);
+
+            var oXMLDoc = new XmlDocument();
+            oXMLDoc.Load(sfr_path);
+            creationPackage.XmlData = oXMLDoc.InnerXml;
+            creationPackage.UniqueID = Guid.NewGuid().ToString("N");
+            SAPbouiCOM.Form oForm = Global.SBOApplication.Forms.AddEx(creationPackage);
+
+            oForm.Visible = true;
         }
 
         #endregion
