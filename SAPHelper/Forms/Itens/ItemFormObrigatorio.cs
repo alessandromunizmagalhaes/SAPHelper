@@ -1,6 +1,6 @@
 ﻿namespace SAPHelper
 {
-    public class ItemFormObrigatorio : ItemForm
+    public class ItemFormObrigatorio : ItemForm, IItemFormObrigatorio
     {
         public string Mensagem { get; set; }
     }

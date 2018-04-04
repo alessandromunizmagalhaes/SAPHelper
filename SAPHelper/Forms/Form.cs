@@ -209,6 +209,42 @@ namespace SAPHelper
 
         #region :: Utils
 
+        public static void CriarForm(string sfr_path)
+        {
+            SAPbouiCOM.Form oForm = CreationPackage(sfr_path);
+
+            oForm.Visible = true;
+        }
+
+        public static void CriarFormFilho(string sfr_path, string fatherFormUID, Form formFilho)
+        {
+            SAPbouiCOM.Form oForm = CreationPackage(sfr_path);
+
+            var fatherFormUIDField = formFilho.GetType().GetField("_fatherFormUID");
+            if (fatherFormUIDField != null)
+            {
+                fatherFormUIDField.SetValue(formFilho, fatherFormUID);
+
+                oForm.Visible = true;
+            }
+            else
+            {
+                Dialogs.PopupError("Erro interno. Erro de desenvolvimento.\nField estático '_fatherFormUID' não encontrado na classe filha");
+            }
+        }
+
+        private static SAPbouiCOM.Form CreationPackage(string sfr_path)
+        {
+            FormCreationParams creationPackage = Global.SBOApplication.CreateObject(BoCreatableObjectType.cot_FormCreationParams);
+
+            var oXMLDoc = new XmlDocument();
+            oXMLDoc.Load(sfr_path);
+            creationPackage.XmlData = oXMLDoc.InnerXml;
+            creationPackage.UniqueID = Guid.NewGuid().ToString("N");
+            SAPbouiCOM.Form oForm = Global.SBOApplication.Forms.AddEx(creationPackage);
+            return oForm;
+        }
+
         protected SAPbouiCOM.Form GetForm(string formUID)
         {
             return Global.SBOApplication.Forms.Item(formUID);
@@ -261,90 +297,31 @@ namespace SAPHelper
             return next_code.PadLeft(4, '0');
         }
 
-        protected void PopularComboBox(SAPbouiCOM.Form form, string comboUID, string sql)
-        {
-            ComboBox comboBox = ((ComboBox)form.Items.Item(comboUID).Specific);
-            PopularComboBox(comboBox, sql);
-        }
-
-        protected void PopularComboBox(ComboBox comboBox, string sql)
-        {
-            RemoverTodosValoresValidados(comboBox);
-            AcrescentarValoresValidados(comboBox, sql);
-        }
-
-        protected void AcrescentarValoresValidados(ComboBox comboBox, string sql)
-        {
-            var rs = Helpers.DoQuery(sql);
-            while (!rs.EoF)
-            {
-                comboBox.ValidValues.Add(rs.Fields.Item(0).Value.ToString(), rs.Fields.Item(1).Value.ToString());
-
-                rs.MoveNext();
-            }
-        }
-
-        protected void RemoverTodosValoresValidados(ComboBox comboBox)
-        {
-            var count = comboBox.ValidValues.Count;
-            for (int i = 0; i < count; i++)
-            {
-                comboBox.ValidValues.Remove(0, BoSearchKey.psk_Index);
-            }
-        }
-
         protected void ValidarCamposObrigatorios(DBDataSource dbdts)
         {
             var props = GetType().GetFields();
             foreach (var prop in props)
             {
-                if (prop.FieldType == typeof(ItemFormObrigatorio))
+                if (typeof(IItemFormObrigatorio).IsAssignableFrom(prop.FieldType))
                 {
-                    var propriedade = (ItemFormObrigatorio)prop.GetValue(this);
-                    var valor = dbdts.GetValue(propriedade.Datasource, 0).Trim();
+                    var propriedadeItemForm = (ItemForm)prop.GetValue(this);
+                    var propriedadeInterface = (IItemFormObrigatorio)prop.GetValue(this);
+                    var valor = dbdts.GetValue(propriedadeItemForm.Datasource, 0).Trim();
 
                     if (string.IsNullOrEmpty(valor))
                     {
-                        throw new FormValidationException(propriedade.Mensagem, propriedade.ItemUID);
+                        throw new FormValidationException(propriedadeInterface.Mensagem, propriedadeItemForm.ItemUID);
                     }
                 }
             }
         }
 
-        public static void CriarForm(string sfr_path)
+        protected static void ChangeFormMode(SAPbouiCOM.Form form)
         {
-            SAPbouiCOM.Form oForm = CreationPackage(sfr_path);
-
-            oForm.Visible = true;
-        }
-
-        public static void CriarFormFilho(string sfr_path, string fatherFormUID, Form formFilho)
-        {
-            SAPbouiCOM.Form oForm = CreationPackage(sfr_path);
-
-            var fatherFormUIDField = formFilho.GetType().GetField("_fatherFormUID");
-            if (fatherFormUIDField != null)
+            if (form.Mode == BoFormMode.fm_OK_MODE)
             {
-                fatherFormUIDField.SetValue(formFilho, fatherFormUID);
-
-                oForm.Visible = true;
+                form.Mode = BoFormMode.fm_UPDATE_MODE;
             }
-            else
-            {
-                Dialogs.PopupError("Erro interno. Erro de desenvolvimento.\nField estático '_fatherFormUID' não encontrado na classe filha");
-            }
-        }
-
-        private static SAPbouiCOM.Form CreationPackage(string sfr_path)
-        {
-            FormCreationParams creationPackage = Global.SBOApplication.CreateObject(BoCreatableObjectType.cot_FormCreationParams);
-
-            var oXMLDoc = new XmlDocument();
-            oXMLDoc.Load(sfr_path);
-            creationPackage.XmlData = oXMLDoc.InnerXml;
-            creationPackage.UniqueID = Guid.NewGuid().ToString("N");
-            SAPbouiCOM.Form oForm = Global.SBOApplication.Forms.AddEx(creationPackage);
-            return oForm;
         }
 
         #endregion

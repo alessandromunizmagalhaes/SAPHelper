@@ -65,9 +65,13 @@
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\FormEvents.cs" />
     <Compile Include="Forms\FormValidationException.cs" />
-    <Compile Include="Forms\ItemForm.cs" />
-    <Compile Include="Forms\ItemFormObrigatorio.cs" />
+    <Compile Include="Forms\Itens\ComboForm.cs" />
+    <Compile Include="Forms\Itens\ComboFormObrigatorio.cs" />
+    <Compile Include="Forms\Itens\IItemFormObrigatorio.cs" />
+    <Compile Include="Forms\Itens\ItemForm.cs" />
+    <Compile Include="Forms\Itens\ItemFormObrigatorio.cs" />
     <Compile Include="Forms\MapEventsToForms.cs" />
+    <Compile Include="Forms\Itens\MatrizForm.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Helpers\Helpers.cs" />
     <Compile Include="Menu\Menu.cs" />
