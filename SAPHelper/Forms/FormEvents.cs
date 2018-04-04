@@ -73,6 +73,22 @@ namespace SAPHelper
 
                     #endregion
 
+                    #region :: Form_Close
+
+                    else if (pVal.EventType == BoEventTypes.et_FORM_CLOSE)
+                    {
+                        if (Events.Antes(pVal))
+                        {
+                            ((Form)FormObjType).OnBeforeFormClose(FormUID, ref pVal, out BubbleEvent);
+                        }
+                        else if (Events.Depois(pVal) && pVal.ActionSuccess)
+                        {
+                            ((Form)FormObjType).OnAfterFormClose(FormUID, ref pVal, out BubbleEvent);
+                        }
+                    }
+
+                    #endregion
+
                     #region :: Form_Visible
 
                     // esse evento é muito louco.

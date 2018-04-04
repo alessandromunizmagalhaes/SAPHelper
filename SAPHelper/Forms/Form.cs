@@ -51,7 +51,6 @@ namespace SAPHelper
         #endregion
 
 
-
         #region :: Form Data Load
 
         public virtual void OnBeforeFormDataLoad(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
@@ -87,6 +86,20 @@ namespace SAPHelper
             BubbleEvent = true;
         }
         public virtual void OnAfterFormDraw(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
+        #region :: Form Close
+
+        public virtual void OnBeforeFormClose(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterFormClose(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
         {
             BubbleEvent = true;
         }
@@ -135,7 +148,6 @@ namespace SAPHelper
         }
 
         #endregion
-
 
 
         #region :: Combo Select
@@ -197,14 +209,9 @@ namespace SAPHelper
 
         #region :: Utils
 
-        protected SAPbouiCOM.Form GetForm(ItemEvent pVal)
+        protected SAPbouiCOM.Form GetForm(string formUID)
         {
-            return Global.SBOApplication.Forms.Item(pVal.FormUID);
-        }
-
-        protected SAPbouiCOM.Form GetForm(BusinessObjectInfo pVal)
-        {
-            return Global.SBOApplication.Forms.Item(pVal.FormUID);
+            return Global.SBOApplication.Forms.Item(formUID);
         }
 
         protected DBDataSource GetDBDatasource(SAPbouiCOM.Form form, string dbdts_name)
@@ -212,16 +219,24 @@ namespace SAPHelper
             return form.DataSources.DBDataSources.Item(dbdts_name);
         }
 
-        protected DBDataSource GetDBDatasource(ItemEvent pVal, string dbdts_name)
+        protected DBDataSource GetDBDatasource(string formUID, string dbdts_name)
         {
-            SAPbouiCOM.Form form = GetForm(pVal);
+            SAPbouiCOM.Form form = GetForm(formUID);
             return form.DataSources.DBDataSources.Item(dbdts_name);
         }
 
-        protected DBDataSource GetDBDatasource(BusinessObjectInfo pVal, string dbdts_name)
+        protected void Copy(DBDataSource dbdts_from, ref DBDataSource dbdts_to)
         {
-            SAPbouiCOM.Form form = GetForm(pVal);
-            return form.DataSources.DBDataSources.Item(dbdts_name);
+            dbdts_to.Clear();
+            for (int i = 0; i < dbdts_from.Size; i++)
+            {
+                dbdts_to.InsertRecord(i);
+                for (int j = 0; j < dbdts_from.Fields.Count; j++)
+                {
+                    string value = dbdts_from.GetValue(j, i);
+                    dbdts_to.SetValue(j, i, value);
+                }
+            }
         }
 
         protected string GetNextPrimaryKey(string tabela_com_arroba, string campo)
@@ -298,6 +313,30 @@ namespace SAPHelper
 
         public static void CriarForm(string sfr_path)
         {
+            SAPbouiCOM.Form oForm = CreationPackage(sfr_path);
+
+            oForm.Visible = true;
+        }
+
+        public static void CriarFormFilho(string sfr_path, string fatherFormUID, Form formFilho)
+        {
+            SAPbouiCOM.Form oForm = CreationPackage(sfr_path);
+
+            var fatherFormUIDField = formFilho.GetType().GetField("_fatherFormUID");
+            if (fatherFormUIDField != null)
+            {
+                fatherFormUIDField.SetValue(formFilho, fatherFormUID);
+
+                oForm.Visible = true;
+            }
+            else
+            {
+                Dialogs.PopupError("Erro interno. Erro de desenvolvimento.\nField estático '_fatherFormUID' não encontrado na classe filha");
+            }
+        }
+
+        private static SAPbouiCOM.Form CreationPackage(string sfr_path)
+        {
             FormCreationParams creationPackage = Global.SBOApplication.CreateObject(BoCreatableObjectType.cot_FormCreationParams);
 
             var oXMLDoc = new XmlDocument();
@@ -305,8 +344,7 @@ namespace SAPHelper
             creationPackage.XmlData = oXMLDoc.InnerXml;
             creationPackage.UniqueID = Guid.NewGuid().ToString("N");
             SAPbouiCOM.Form oForm = Global.SBOApplication.Forms.AddEx(creationPackage);
-
-            oForm.Visible = true;
+            return oForm;
         }
 
         #endregion
