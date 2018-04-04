@@ -250,6 +250,24 @@ namespace SAPHelper
             return Global.SBOApplication.Forms.Item(formUID);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="formUID"></param>
+        /// <returns>Se o Form não existir, retorna NULL</returns>
+        protected SAPbouiCOM.Form GetFormIfExists(string formUID)
+        {
+            SAPbouiCOM.Form form = null;
+            for (int i = 0; i < Global.SBOApplication.Forms.Count; i++)
+            {
+                if (Global.SBOApplication.Forms.Item(i).UniqueID == formUID)
+                {
+                    GetForm(formUID);
+                }
+            }
+            return form;
+        }
+
         protected DBDataSource GetDBDatasource(SAPbouiCOM.Form form, string dbdts_name)
         {
             return form.DataSources.DBDataSources.Item(dbdts_name);
