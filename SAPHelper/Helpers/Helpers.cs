@@ -4,15 +4,20 @@ namespace SAPHelper
 {
     public static class Helpers
     {
-        public static string DateToString(DateTime date)
+        public static string ToString(DateTime date)
         {
             return date.ToString("yyyyMMdd");
         }
 
-        public static DateTime StringToDate(string date)
+        public static DateTime ToDate(string date)
         {
             SBObob sBObob = GetSBOBob();
             return sBObob.Format_StringToDate(date).Fields.Item(0).Value;
+        }
+
+        public static double ToDouble(string value)
+        {
+            return Convert.ToDouble(value, System.Globalization.CultureInfo.InvariantCulture);
         }
 
         private static SBObob GetSBOBob()
