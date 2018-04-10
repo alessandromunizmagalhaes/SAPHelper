@@ -150,6 +150,22 @@ namespace SAPHelper
         #endregion
 
 
+
+        #region :: Validate
+
+
+        public virtual void OnBeforeValidate(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterValidate(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
         #region :: Combo Select
 
 
@@ -329,7 +345,7 @@ namespace SAPHelper
 
                     if (string.IsNullOrEmpty(valor))
                     {
-                        throw new FormValidationException(propriedadeInterface.Mensagem, propriedadeItemForm.ItemUID);
+                        throw new FormValidationException(propriedadeInterface.Mensagem, propriedadeItemForm.ItemUID, propriedadeInterface.AbaUID);
                     }
                 }
             }
@@ -403,6 +419,34 @@ namespace SAPHelper
             {
                 throw new ArgumentException($"Erro interno. O dbdatasource {dbdts.TableName} não possui uma coluna LineId");
             }
+        }
+
+        public void CarregarDataSourceFormPai(string localFormUID, string fatherFormUID, string localMatrixUID, string dbdts_name_compartilhado)
+        {
+            var fatherForm = GetFormIfExists(fatherFormUID);
+            if (fatherForm != null)
+            {
+                var fatherDbdts = GetDBDatasource(fatherForm, dbdts_name_compartilhado);
+
+                var localForm = GetForm(localFormUID);
+                ((Matrix)localForm.Items.Item(localMatrixUID).Specific).FlushToDataSource();
+                var localDbdts = GetDBDatasource(localForm, dbdts_name_compartilhado);
+
+                Copy(localDbdts, ref fatherDbdts);
+            }
+        }
+
+        public void CarregarDadosMatriz(SAPbouiCOM.Form localForm, string fatherFormUID, string localMatrixUID, string dbdts_name_compartilhado)
+        {
+            var localDbdts = GetDBDatasource(localForm, dbdts_name_compartilhado);
+
+            var fatherForm = GetForm(fatherFormUID);
+            var fatherDbdts = GetDBDatasource(fatherForm, dbdts_name_compartilhado);
+
+            Copy(fatherDbdts, ref localDbdts);
+
+            var mtx = ((Matrix)localForm.Items.Item(localMatrixUID).Specific);
+            mtx.LoadFromDataSourceEx(true);
         }
 
         #endregion

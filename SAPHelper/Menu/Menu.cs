@@ -9,6 +9,7 @@ namespace SAPHelper
     public static class Menu
     {
         private static string binFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string logoPath = binFolder + "/logo.png";
 
         public static void CriarMenus(string xmlpath)
         {
@@ -24,6 +25,11 @@ namespace SAPHelper
         {
             XmlDocument xml = new XmlDocument();
             xml.Load(xmlpath);
+
+            if (File.Exists(logoPath) && xml.InnerXml.Contains("Image"))
+            {
+                xml.InnerXml = xml.InnerXml.Replace("_LOGO_PATH_", logoPath);
+            }
             Global.SBOApplication.LoadBatchActions(xml.InnerXml);
         }
 

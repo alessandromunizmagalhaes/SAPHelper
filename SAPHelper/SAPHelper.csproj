@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Connection\Connection.cs" />
     <Compile Include="Database\Coluna\Coluna.cs" />
+    <Compile Include="Database\Coluna\ColunaAtivo.cs" />
     <Compile Include="Database\Coluna\ColunaDate.cs" />
     <Compile Include="Database\Coluna\ColunaImage.cs" />
     <Compile Include="Database\Coluna\ColunaInt.cs" />

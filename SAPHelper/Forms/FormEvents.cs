@@ -176,6 +176,22 @@ namespace SAPHelper
 
                     #endregion
 
+                    #region :: Validate
+
+                    else if (pVal.EventType == BoEventTypes.et_VALIDATE)
+                    {
+                        if (Events.Antes(pVal))
+                        {
+                            ((Form)FormObjType).OnBeforeValidate(FormUID, ref pVal, out BubbleEvent);
+                        }
+                        else if (Events.Depois(pVal) && pVal.ActionSuccess)
+                        {
+                            ((Form)FormObjType).OnAfterValidate(FormUID, ref pVal, out BubbleEvent);
+                        }
+                    }
+
+                    #endregion
+
                     #region :: COMBO_SELECT
 
                     else if (pVal.EventType == BoEventTypes.et_COMBO_SELECT)

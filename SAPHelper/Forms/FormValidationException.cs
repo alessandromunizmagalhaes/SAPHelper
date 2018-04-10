@@ -6,9 +6,13 @@ namespace SAPHelper
     {
         private string _campo;
         public string Campo { get { return _campo; } }
-        public FormValidationException(string message, string campo) : base(message)
+
+        private string _abaUID;
+        public string AbaUID { get { return _abaUID; } }
+        public FormValidationException(string message, string campo, string abaUID) : base(message)
         {
             _campo = campo;
+            _abaUID = abaUID;
         }
     }
 }

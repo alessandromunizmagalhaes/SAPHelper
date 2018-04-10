@@ -10,23 +10,38 @@ namespace SAPHelper
         public void PopularComboBox(SAPbouiCOM.Form form)
         {
             ComboBox comboBox = ((ComboBox)form.Items.Item(ItemUID).Specific);
-            PopularComboBox(comboBox);
+            PopularComboBox(comboBox.ValidValues);
         }
 
-        public void PopularComboBox(ComboBox comboBox)
+        public void PopularComboBox(SAPbouiCOM.Form form, string matrixUID, string colunaUID)
         {
-            RemoverTodosValoresValidados(comboBox);
-            AcrescentarValoresValidados(comboBox);
+            PopularComboBox(((Matrix)form.Items.Item(matrixUID).Specific).Columns.Item(colunaUID).ValidValues);
         }
 
-        public void AcrescentarValoresValidados(ComboBox comboBox)
+        public void PopularComboBox(Matrix mtx, string colunaUID)
+        {
+            PopularComboBox(mtx.Columns.Item(colunaUID).ValidValues);
+        }
+
+        public void PopularComboBox(Column coluna)
+        {
+            PopularComboBox(coluna.ValidValues);
+        }
+
+        public void PopularComboBox(ValidValues validValues)
+        {
+            RemoverTodosValoresValidados(validValues);
+            AcrescentarValoresValidados(validValues);
+        }
+
+        public void AcrescentarValoresValidados(ValidValues validValues)
         {
             if (!string.IsNullOrEmpty(SQL))
             {
                 var rs = Helpers.DoQuery(SQL);
                 while (!rs.EoF)
                 {
-                    comboBox.ValidValues.Add(rs.Fields.Item(0).Value.ToString(), rs.Fields.Item(1).Value.ToString());
+                    validValues.Add(rs.Fields.Item(0).Value.ToString(), rs.Fields.Item(1).Value.ToString());
 
                     rs.MoveNext();
                 }
@@ -37,12 +52,12 @@ namespace SAPHelper
             }
         }
 
-        public void RemoverTodosValoresValidados(ComboBox comboBox)
+        public void RemoverTodosValoresValidados(ValidValues validValues)
         {
-            var count = comboBox.ValidValues.Count;
+            var count = validValues.Count;
             for (int i = 0; i < count; i++)
             {
-                comboBox.ValidValues.Remove(0, BoSearchKey.psk_Index);
+                validValues.Remove(0, BoSearchKey.psk_Index);
             }
         }
 
