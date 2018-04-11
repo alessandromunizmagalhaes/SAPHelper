@@ -332,7 +332,31 @@ namespace SAPHelper
             return next_code.PadLeft(4, '0');
         }
 
-        protected void ValidarCamposObrigatorios(DBDataSource dbdts)
+        public bool ValidarCamposObrigatorios(SAPbouiCOM.Form form, DBDataSource dbdts)
+        {
+            try
+            {
+                ValidarCamposObrigatorios(dbdts);
+            }
+            catch (FormValidationException e)
+            {
+                Dialogs.MessageBox(e.Message);
+                if (!String.IsNullOrEmpty(e.AbaUID))
+                {
+                    form.Items.Item(e.AbaUID).Click();
+                }
+                form.Items.Item(e.Campo).Click();
+                return false;
+            }
+            catch (Exception e)
+            {
+                Dialogs.PopupError("Erro interno. Erro ao tentar adicionar valores do formulário.\nErro: " + e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        private void ValidarCamposObrigatorios(DBDataSource dbdts)
         {
             var props = GetType().GetFields();
             foreach (var prop in props)
@@ -345,7 +369,8 @@ namespace SAPHelper
 
                     if (string.IsNullOrEmpty(valor))
                     {
-                        throw new FormValidationException(propriedadeInterface.Mensagem, propriedadeItemForm.ItemUID, propriedadeInterface.AbaUID);
+                        string mensagem = !string.IsNullOrEmpty(propriedadeInterface.Mensagem) ? propriedadeInterface.Mensagem : $"Não foi definido uma mensagem para o itemformobrigatorio {propriedadeItemForm.ItemUID}";
+                        throw new FormValidationException(mensagem, propriedadeItemForm.ItemUID, propriedadeInterface.AbaUID);
                     }
                 }
             }

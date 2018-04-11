@@ -64,6 +64,7 @@
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="Forms\Form.cs" />
+    <Compile Include="Forms\FormCadastroBasico.cs" />
     <Compile Include="Forms\FormEvents.cs" />
     <Compile Include="Forms\FormValidationException.cs" />
     <Compile Include="Forms\Itens\ComboForm.cs" />
