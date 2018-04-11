@@ -7,28 +7,28 @@ namespace SAPHelper
     {
         public string SQL { get; set; }
 
-        public void PopularComboBox(SAPbouiCOM.Form form)
+        public void Popular(SAPbouiCOM.Form form)
         {
             ComboBox comboBox = ((ComboBox)form.Items.Item(ItemUID).Specific);
-            PopularComboBox(comboBox.ValidValues);
+            Popular(comboBox.ValidValues);
         }
 
-        public void PopularComboBox(SAPbouiCOM.Form form, string matrixUID, string colunaUID)
+        public void Popular(SAPbouiCOM.Form form, string matrixUID)
         {
-            PopularComboBox(((Matrix)form.Items.Item(matrixUID).Specific).Columns.Item(colunaUID).ValidValues);
+            Popular(((Matrix)form.Items.Item(matrixUID).Specific).Columns.Item(ItemUID).ValidValues);
         }
 
-        public void PopularComboBox(Matrix mtx, string colunaUID)
+        public void Popular(Matrix mtx)
         {
-            PopularComboBox(mtx.Columns.Item(colunaUID).ValidValues);
+            Popular(mtx.Columns.Item(ItemUID).ValidValues);
         }
 
-        public void PopularComboBox(Column coluna)
+        public void Popular(Column coluna)
         {
-            PopularComboBox(coluna.ValidValues);
+            Popular(coluna.ValidValues);
         }
 
-        public void PopularComboBox(ValidValues validValues)
+        public void Popular(ValidValues validValues)
         {
             RemoverTodosValoresValidados(validValues);
             AcrescentarValoresValidados(validValues);

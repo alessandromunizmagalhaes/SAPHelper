@@ -67,6 +67,7 @@
     <Compile Include="Forms\FormCadastroBasico.cs" />
     <Compile Include="Forms\FormEvents.cs" />
     <Compile Include="Forms\FormValidationException.cs" />
+    <Compile Include="Forms\Itens\ButtonForm.cs" />
     <Compile Include="Forms\Itens\ComboForm.cs" />
     <Compile Include="Forms\Itens\ComboFormObrigatorio.cs" />
     <Compile Include="Forms\Itens\IItemFormObrigatorio.cs" />
