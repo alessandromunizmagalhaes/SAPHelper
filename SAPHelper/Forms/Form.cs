@@ -376,73 +376,11 @@ namespace SAPHelper
             }
         }
 
-        protected static void ChangeFormMode(SAPbouiCOM.Form form)
+        public static void ChangeFormMode(SAPbouiCOM.Form form)
         {
             if (form.Mode == BoFormMode.fm_OK_MODE)
             {
                 form.Mode = BoFormMode.fm_UPDATE_MODE;
-            }
-        }
-
-        public void AddLine(SAPbouiCOM.Form form, string matrixUID, string dbdts_name)
-        {
-            var mtx = ((Matrix)form.Items.Item(matrixUID).Specific);
-
-            mtx.FlushToDataSource();
-            try
-            {
-                form.Freeze(true);
-
-                var dbdts = GetDBDatasource(form, dbdts_name);
-                dbdts.InsertRecord(dbdts.Size);
-                ReArrangeLineId(dbdts);
-                mtx.LoadFromDataSourceEx();
-            }
-            catch (Exception e)
-            {
-                Dialogs.Error("Erro ao tentar adicionar uma nova linha a matriz.\nErro: " + e.Message);
-            }
-            finally
-            {
-                form.Freeze(false);
-            }
-        }
-
-        public void RemoveSelectedLine(SAPbouiCOM.Form form, string matrixUID, string dbdts_name)
-        {
-            var mtx = ((Matrix)form.Items.Item(matrixUID).Specific);
-
-            int row = mtx.GetNextSelectedRow();
-            if (row > 0)
-            {
-                mtx.DeleteRow(row);
-                mtx.FlushToDataSource();
-
-                var dbdts = GetDBDatasource(form, dbdts_name);
-                ReArrangeLineId(dbdts);
-                mtx.LoadFromDataSourceEx();
-
-                ChangeFormMode(form);
-            }
-            else
-            {
-                Dialogs.PopupError("Selecione uma linha.");
-            }
-        }
-
-        public void ReArrangeLineId(DBDataSource dbdts)
-        {
-            var lineIDField = dbdts.Fields.Item("LineId");
-            if (lineIDField != null)
-            {
-                for (int i = 0; i < dbdts.Size; i++)
-                {
-                    dbdts.SetValue("LineId", i, (i + 1).ToString());
-                }
-            }
-            else
-            {
-                throw new ArgumentException($"Erro interno. O dbdatasource {dbdts.TableName} não possui uma coluna LineId");
             }
         }
 
