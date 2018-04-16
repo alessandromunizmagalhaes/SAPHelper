@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace SAPHelper
 {
-    public static class Database
+    public class Database : IDisposable
     {
         #region :: Gestão de Tabelas
 
-        public static void CriarTabela(Tabela tabela)
+        public void CriarTabela(Tabela tabela)
         {
             bool tabela_is_UDO = tabela is TabelaUDO;
             TabelaUDO tabelaUDO = tabela_is_UDO ? (TabelaUDO)tabela : null;
@@ -63,7 +63,7 @@ namespace SAPHelper
             }
         }
 
-        private static void DefinirTabelasComoFilhasDoUDO(UserObjectsMD objUserObjectMD, string nomeTabelaPai, List<Tabela> tabelasFilhas)
+        private void DefinirTabelasComoFilhasDoUDO(UserObjectsMD objUserObjectMD, string nomeTabelaPai, List<Tabela> tabelasFilhas)
         {
             foreach (var tabelaFilha in tabelasFilhas)
             {
@@ -72,7 +72,7 @@ namespace SAPHelper
             }
         }
 
-        private static void DefinirTabelaComoUDO(UserObjectsMD objUserObjectMD, TabelaUDO tabela)
+        private void DefinirTabelaComoUDO(UserObjectsMD objUserObjectMD, TabelaUDO tabela)
         {
             objUserObjectMD.TableName = tabela.NomeSemArroba;
             objUserObjectMD.Name = tabela.NomeSemArroba;
@@ -90,7 +90,7 @@ namespace SAPHelper
             objUserObjectMD.EnableEnhancedForm = tabela.EnableEnhancedForm;
         }
 
-        private static void CriarUserTable(Tabela tabela)
+        private void CriarUserTable(Tabela tabela)
         {
             GC.Collect();
             UserTablesMD oUserTablesMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserTables);
@@ -108,7 +108,7 @@ namespace SAPHelper
             GC.Collect();
         }
 
-        public static void ExcluirTabela(string nomeSemArroba)
+        public void ExcluirTabela(string nomeSemArroba)
         {
             GC.Collect();
             UserObjectsMD oUDO = Global.Company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
@@ -139,7 +139,7 @@ namespace SAPHelper
             objUserTablesMD = null;
         }
 
-        public static bool ExisteTabela(string nome_tabela)
+        public bool ExisteTabela(string nome_tabela)
         {
             Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql = "SELECT COUNT(*) FROM OUTB WHERE TableName = '" + nome_tabela + "'";
@@ -164,7 +164,7 @@ namespace SAPHelper
 
         #region :: Gestão de Campos
 
-        public static void CriarCampo(string nome_tabela, Coluna coluna)
+        public void CriarCampo(string nome_tabela, Coluna coluna)
         {
             if (!ExisteColuna(nome_tabela, coluna.Nome))
             {
@@ -172,7 +172,7 @@ namespace SAPHelper
             }
         }
 
-        private static void CriarColuna(string nome_tabela, Coluna coluna)
+        private void CriarColuna(string nome_tabela, Coluna coluna)
         {
             CriarUserField(nome_tabela, coluna);
 
@@ -205,7 +205,7 @@ namespace SAPHelper
         /// sempre que for o primeiro, inventa uma coluna ficticia e passa o Code.
         /// horroroso mas é o jeito.
         /// </param>
-        public static void DefinirColunasComoUDO(UserObjectsMD objUserObjectMD, string nome_tabela, List<Coluna> colunas, bool criar_campo_code_antes = false)
+        public void DefinirColunasComoUDO(UserObjectsMD objUserObjectMD, string nome_tabela, List<Coluna> colunas, bool criar_campo_code_antes = false)
         {
             // quando se está criando uma nova tabela
             // tem que fazer essa gambiarra horrível, porque o primeiro elemento a ser colocado como UDO,
@@ -225,7 +225,7 @@ namespace SAPHelper
             }
         }
 
-        private static void CriarUserField(string nome_tabela, Coluna coluna)
+        private void CriarUserField(string nome_tabela, Coluna coluna)
         {
             GC.Collect();
             UserFieldsMD objUserFieldsMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserFields);
@@ -285,19 +285,6 @@ namespace SAPHelper
                 objUserFieldsMD.SubType = BoFldSubTypes.st_Image;
             }
 
-            if (!String.IsNullOrEmpty(coluna.TabelaNoObjectVinculada))
-            {
-                objUserFieldsMD.LinkedTable = coluna.TabelaNoObjectVinculada;
-            }
-            else if (!String.IsNullOrEmpty(coluna.TabelaUDOVinculada))
-            {
-                objUserFieldsMD.LinkedUDO = coluna.TabelaUDOVinculada;
-            }
-            else if (coluna.TabelaSistemaVinculada != BoObjectTypes.BoRecordset)
-            {
-                objUserFieldsMD.LinkedSystemObject = coluna.TabelaSistemaVinculada;
-            }
-
             if (coluna.Tamanho > 0)
             {
                 objUserFieldsMD.EditSize = coluna.Tamanho;
@@ -313,21 +300,21 @@ namespace SAPHelper
             objUserFieldsMD = null;
         }
 
-        private static void AdicionarFindColumnsAoObjeto(UserObjectsMD objUserObjectMD, string nome_coluna, string descricao_coluna)
+        private void AdicionarFindColumnsAoObjeto(UserObjectsMD objUserObjectMD, string nome_coluna, string descricao_coluna)
         {
             objUserObjectMD.FindColumns.ColumnAlias = nome_coluna;
             objUserObjectMD.FindColumns.ColumnDescription = descricao_coluna;
             objUserObjectMD.FindColumns.Add();
         }
 
-        private static void AdicionarFormColumnsAoObjeto(UserObjectsMD objUserObjectMD, string nome_coluna, string descricao_coluna)
+        private void AdicionarFormColumnsAoObjeto(UserObjectsMD objUserObjectMD, string nome_coluna, string descricao_coluna)
         {
             objUserObjectMD.FormColumns.FormColumnAlias = nome_coluna;
             objUserObjectMD.FormColumns.FormColumnDescription = descricao_coluna;
             objUserObjectMD.FormColumns.Add();
         }
 
-        public static void ExcluirColuna(string nome_tabela, string nome_campo)
+        public void ExcluirColuna(string nome_tabela, string nome_campo)
         {
             int FieldId = GetFieldId(nome_tabela, nome_campo);
 
@@ -348,7 +335,7 @@ namespace SAPHelper
             }
         }
 
-        public static bool ExisteColuna(string nome_tabela, string nome_campo)
+        public bool ExisteColuna(string nome_tabela, string nome_campo)
         {
             Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             var sql = $"SELECT COUNT(*) FROM CUFD (NOLOCK) WHERE TableID='{nome_tabela}' and AliasID='{nome_campo}'";
@@ -371,7 +358,7 @@ namespace SAPHelper
 
         #region :: Valores válidos, Valores Padrão e Obrigatoriedade
 
-        public static void AdicionarValorValido(string nome_tabela, string nome_campo, string valor, string descricao)
+        public void AdicionarValorValido(string nome_tabela, string nome_campo, string valor, string descricao)
         {
             bool valorExiste = false;
             int campoID = GetFieldId(nome_tabela, nome_campo);
@@ -423,7 +410,7 @@ namespace SAPHelper
             }
         }
 
-        public static bool SetarCampoComoObrigatorio(string nome_tabela, string nome_campo)
+        public bool SetarCampoComoObrigatorio(string nome_tabela, string nome_campo)
         {
             int campoID = GetFieldId(nome_tabela, nome_campo);
             UserFieldsMD objUserFieldsMD;
@@ -442,7 +429,7 @@ namespace SAPHelper
             return true;
         }
 
-        public static bool SetarValorPadrao(string nome_tabela, string nome_campo, string valor)
+        public bool SetarValorPadrao(string nome_tabela, string nome_campo, string valor)
         {
             bool valorExiste = false;
             int campoID = GetFieldId(nome_tabela, nome_campo);
@@ -479,7 +466,7 @@ namespace SAPHelper
             }
         }
 
-        public static bool ExisteValorValido(string nome_tabela, int campoID, string valor)
+        public bool ExisteValorValido(string nome_tabela, int campoID, string valor)
         {
             Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql =
@@ -499,7 +486,7 @@ namespace SAPHelper
             return false;
         }
 
-        public static bool ExisteValorPadraoSetado(string nome_tabela, int campoID, string valor)
+        public bool ExisteValorPadraoSetado(string nome_tabela, int campoID, string valor)
         {
             Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql = $@"SELECT COUNT(*) FROM CUFD (NOLOCK) 
@@ -525,7 +512,7 @@ namespace SAPHelper
 
         #region :: Helpers
 
-        public static int GetFieldId(string nome_tabela, string nome_campo)
+        public int GetFieldId(string nome_tabela, string nome_campo)
         {
             Recordset rs = Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             string sql = $@" SELECT FieldID FROM CUFD (NOLOCK)  WHERE TableID='{nome_tabela}' AND AliasID='{nome_campo}'";
@@ -543,5 +530,14 @@ namespace SAPHelper
 
         #endregion
 
+
+        #region :: Dispose
+
+        public void Dispose()
+        {
+            ConfigXML.JaCriouEstrutura = true;
+        }
+
+        #endregion
     }
 }

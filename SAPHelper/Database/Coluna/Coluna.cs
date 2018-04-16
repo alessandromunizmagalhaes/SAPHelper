@@ -1,18 +1,14 @@
-﻿using SAPbobsCOM;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SAPHelper
 {
     public class Coluna
     {
-        protected Coluna(string nome, string descricao, bool obrigatoria = false, string tabelaNoObjectVinculada = "", string tabelaUDOVinculada = "", BoObjectTypes tabelaSistemaVinculada = BoObjectTypes.BoRecordset)
+        protected Coluna(string nome, string descricao, bool obrigatoria = false)
         {
             Nome = nome;
             Descricao = descricao;
             Obrigatoria = obrigatoria;
-            TabelaNoObjectVinculada = tabelaNoObjectVinculada;
-            TabelaUDOVinculada = tabelaUDOVinculada;
-            TabelaSistemaVinculada = tabelaSistemaVinculada;
         }
 
         public string NomeComU_NaFrente
@@ -25,10 +21,5 @@ namespace SAPHelper
         public string ValorPadrao { get; set; } = "";
         public List<ValorValido> ValoresValidos { get; set; } = new List<ValorValido>() { };
         public int Tamanho { get; set; } = -1;
-        public string TabelaNoObjectVinculada { get; set; }
-        public string TabelaUDOVinculada { get; set; }
-
-        // BoObjectTypes.BoRecordset usado como default. não pode usar ele, então eu uso como se não tivesse nenhum setado
-        public BoObjectTypes TabelaSistemaVinculada { get; set; }
     }
 }

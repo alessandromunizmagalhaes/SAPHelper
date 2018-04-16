@@ -9,7 +9,7 @@ namespace SAPHelper
     public static class Menu
     {
         private static string binFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        public static string logoPath = binFolder + "/logo.png";
+        public static string logoPath = binFolder + "\\logo.png";
 
         public static void CriarMenus(string xmlpath)
         {

@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ConfigXML.cs" />
     <Compile Include="Connection\Connection.cs" />
     <Compile Include="Database\Coluna\Coluna.cs" />
     <Compile Include="Database\Coluna\ColunaAtivo.cs" />
