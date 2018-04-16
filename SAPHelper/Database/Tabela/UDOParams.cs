@@ -12,5 +12,6 @@ namespace SAPHelper
         public BoYesNoEnum CanLog { get; set; } = BoYesNoEnum.tYES;
         public BoYesNoEnum CanYearTransfer { get; set; } = BoYesNoEnum.tYES;
         public BoYesNoEnum ManageSeries { get; set; } = BoYesNoEnum.tYES;
+        public BoYesNoEnum EnableEnhancedForm { get; set; } = BoYesNoEnum.tYES;
     }
 }

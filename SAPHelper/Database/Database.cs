@@ -87,6 +87,7 @@ namespace SAPHelper
             objUserObjectMD.CanYearTransfer = tabela.CanYearTransfer;
             objUserObjectMD.ManageSeries = tabela.ManageSeries;
             objUserObjectMD.ObjectType = tabela.ObjectType;
+            objUserObjectMD.EnableEnhancedForm = tabela.EnableEnhancedForm;
         }
 
         private static void CriarUserTable(Tabela tabela)
@@ -163,7 +164,15 @@ namespace SAPHelper
 
         #region :: Gestão de Campos
 
-        public static void CriarColuna(string nome_tabela, Coluna coluna)
+        public static void CriarCampo(string nome_tabela, Coluna coluna)
+        {
+            if (!ExisteColuna(nome_tabela, coluna.Nome))
+            {
+                CriarColuna(nome_tabela, coluna);
+            }
+        }
+
+        private static void CriarColuna(string nome_tabela, Coluna coluna)
         {
             CriarUserField(nome_tabela, coluna);
 

@@ -18,6 +18,7 @@ namespace SAPHelper
             CanLog = udoParams.CanLog;
             CanYearTransfer = udoParams.CanYearTransfer;
             ManageSeries = udoParams.ManageSeries;
+            EnableEnhancedForm = udoParams.EnableEnhancedForm;
 
             if (tabelasFilhas != null)
             {
@@ -66,6 +67,7 @@ namespace SAPHelper
         public BoYesNoEnum CanLog { get; set; }
         public BoYesNoEnum CanYearTransfer { get; set; }
         public BoYesNoEnum ManageSeries { get; set; }
+        public BoYesNoEnum EnableEnhancedForm { get; set; }
         public BoUDOObjType ObjectType
         {
             get

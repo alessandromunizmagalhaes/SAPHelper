@@ -296,6 +296,17 @@ namespace SAPHelper
             return form.DataSources.DBDataSources.Item(dbdts_name);
         }
 
+        protected Matrix GetMatrix(string formUID, string matrixUID)
+        {
+            SAPbouiCOM.Form form = GetForm(formUID);
+            return GetMatrix(form, matrixUID);
+        }
+
+        protected Matrix GetMatrix(SAPbouiCOM.Form form, string matrixUID)
+        {
+            return ((Matrix)form.Items.Item(matrixUID).Specific);
+        }
+
         protected void Copy(DBDataSource dbdts_from, ref DBDataSource dbdts_to)
         {
             dbdts_to.Clear();
@@ -332,11 +343,11 @@ namespace SAPHelper
             return next_code.PadLeft(4, '0');
         }
 
-        public bool ValidarCamposObrigatorios(SAPbouiCOM.Form form, DBDataSource dbdts)
+        public bool CamposFormEstaoPreenchidos(SAPbouiCOM.Form form, DBDataSource dbdts)
         {
             try
             {
-                ValidarCamposObrigatorios(dbdts);
+                ValidarCamposObrigatorios(dbdts, this);
             }
             catch (FormValidationException e)
             {
@@ -350,29 +361,83 @@ namespace SAPHelper
             }
             catch (Exception e)
             {
-                Dialogs.PopupError("Erro interno. Erro ao tentar adicionar valores do formulário.\nErro: " + e.Message);
+                Dialogs.PopupError("Erro interno. Erro ao tentar atribuir valores do formulário.\nErro: " + e.Message);
                 return false;
             }
             return true;
         }
 
-        private void ValidarCamposObrigatorios(DBDataSource dbdts)
+        public bool CamposMatrizEstaoPreenchidos(SAPbouiCOM.Form form, DBDataSource dbdts, MatrizForm _matriz)
         {
-            var props = GetType().GetFields();
+            try
+            {
+                ValidarCamposObrigatorios(dbdts, _matriz);
+            }
+            catch (FormValidationException e)
+            {
+                Dialogs.MessageBox(e.Message);
+                if (!String.IsNullOrEmpty(e.AbaUID))
+                {
+                    form.Items.Item(e.AbaUID).Click();
+                }
+                ((Matrix)form.Items.Item(_matriz.ItemUID).Specific).Columns.Item(e.Campo).Cells.Item(e.DatasourceRow + 1).Click();
+
+                return false;
+            }
+            catch (Exception e)
+            {
+                Dialogs.PopupError("Erro interno. Erro ao tentar atribuir valores da matriz ao formulário.\nErro: " + e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        private void ValidarCamposObrigatorios(DBDataSource dbdts, object objWithProperties)
+        {
+            var props = objWithProperties.GetType().GetFields();
             foreach (var prop in props)
             {
                 if (typeof(IItemFormObrigatorio).IsAssignableFrom(prop.FieldType))
                 {
-                    var propriedadeItemForm = (ItemForm)prop.GetValue(this);
-                    var propriedadeInterface = (IItemFormObrigatorio)prop.GetValue(this);
-                    var valor = dbdts.GetValue(propriedadeItemForm.Datasource, 0).Trim();
-
-                    if (string.IsNullOrEmpty(valor))
+                    var propriedadeItemForm = (ItemForm)prop.GetValue(objWithProperties);
+                    var propriedadeInterface = (IItemFormObrigatorio)prop.GetValue(objWithProperties);
+                    for (int i = 0; i < dbdts.Size; i++)
                     {
-                        string mensagem = !string.IsNullOrEmpty(propriedadeInterface.Mensagem) ? propriedadeInterface.Mensagem : $"Não foi definido uma mensagem para o itemformobrigatorio {propriedadeItemForm.ItemUID}";
-                        throw new FormValidationException(mensagem, propriedadeItemForm.ItemUID, propriedadeInterface.AbaUID);
+                        var valor = dbdts.GetValue(propriedadeItemForm.Datasource, i).Trim();
+                        var fieldType = dbdts.Fields.Item(propriedadeItemForm.Datasource).Type;
+                        var valido = ValorValido(valor, fieldType);
+
+                        if (!valido)
+                        {
+                            var mensagem = !string.IsNullOrEmpty(propriedadeInterface.Mensagem) ? propriedadeInterface.Mensagem : $"Não foi definido uma mensagem para o itemformobrigatorio {propriedadeItemForm.ItemUID}";
+                            throw new FormValidationException(mensagem, propriedadeItemForm.ItemUID, propriedadeInterface.AbaUID, i);
+                        }
                     }
                 }
+            }
+        }
+
+        private bool ValorValido(string valor, BoFieldsType fieldType)
+        {
+            switch (fieldType)
+            {
+                case BoFieldsType.ft_AlphaNumeric:
+                case BoFieldsType.ft_Text:
+                case BoFieldsType.ft_NotDefined:
+                case BoFieldsType.ft_Date:
+                    return !String.IsNullOrEmpty(valor);
+                case BoFieldsType.ft_Integer:
+                case BoFieldsType.ft_Float:
+                case BoFieldsType.ft_ShortNumber:
+                case BoFieldsType.ft_Quantity:
+                case BoFieldsType.ft_Price:
+                case BoFieldsType.ft_Rate:
+                case BoFieldsType.ft_Measure:
+                case BoFieldsType.ft_Sum:
+                case BoFieldsType.ft_Percent:
+                    return Helpers.ToDouble(valor) > 0;
+                default:
+                    return false;
             }
         }
 

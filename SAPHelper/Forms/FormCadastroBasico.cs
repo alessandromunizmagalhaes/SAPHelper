@@ -32,7 +32,7 @@ namespace SAPHelper
             var form = GetForm(BusinessObjectInfo.FormUID);
             var dbdts = GetDBDatasource(form, mainDbDataSource);
 
-            BubbleEvent = ValidarCamposObrigatorios(form, dbdts);
+            BubbleEvent = CamposFormEstaoPreenchidos(form, dbdts);
         }
 
         public override void OnBeforeFormDataUpdate(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
@@ -42,7 +42,7 @@ namespace SAPHelper
             var form = GetForm(BusinessObjectInfo.FormUID);
             var dbdts = GetDBDatasource(form, mainDbDataSource);
 
-            BubbleEvent = ValidarCamposObrigatorios(form, dbdts);
+            BubbleEvent = CamposFormEstaoPreenchidos(form, dbdts);
         }
 
         #endregion
