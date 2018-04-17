@@ -28,7 +28,7 @@ namespace SAPHelper
             if (File.Exists(xmlPath))
             {
                 xml.Load(xmlPath);
-                xml.SelectSingleNode("/config/criarEstrutura").InnerText = "0";
+                xml.SelectSingleNode("/config/jaCriouEstrutura").InnerText = "1";
                 xml.Save(xmlPath);
             }
         }
@@ -39,7 +39,7 @@ namespace SAPHelper
             if (File.Exists(xmlPath))
             {
                 xml.Load(xmlPath);
-                return xml.SelectSingleNode("/config/criarEstrutura").InnerText == "0";
+                return xml.SelectSingleNode("/config/jaCriouEstrutura").InnerText == "1";
             }
             else
             {

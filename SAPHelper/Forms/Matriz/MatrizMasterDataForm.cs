@@ -7,8 +7,17 @@ namespace SAPHelper
     {
         public void AdicionarLinha(SAPbouiCOM.Form form)
         {
-            var mtx = ((Matrix)form.Items.Item(ItemUID).Specific);
-            mtx.AddRow();
+            try
+            {
+                form.Freeze(true);
+                var mtx = ((Matrix)form.Items.Item(ItemUID).Specific);
+                mtx.AddRow();
+                mtx.ClearRowData(mtx.RowCount);
+            }
+            finally
+            {
+                form.Freeze(false);
+            }
         }
 
         public void RemoverLinha(SAPbouiCOM.Form form)

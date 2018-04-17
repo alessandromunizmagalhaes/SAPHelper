@@ -380,7 +380,11 @@ namespace SAPHelper
                 {
                     form.Items.Item(e.AbaUID).Click();
                 }
-                ((Matrix)form.Items.Item(_matriz.ItemUID).Specific).Columns.Item(e.Campo).Cells.Item(e.DatasourceRow + 1).Click();
+                var mtx = ((Matrix)form.Items.Item(_matriz.ItemUID).Specific);
+                if (mtx.RowCount > 0)
+                {
+                    mtx.Columns.Item(e.Campo).Cells.Item(e.DatasourceRow + 1).Click();
+                }
 
                 return false;
             }
