@@ -75,7 +75,7 @@ namespace SAPHelper
         private void DefinirTabelaComoUDO(UserObjectsMD objUserObjectMD, TabelaUDO tabela)
         {
             objUserObjectMD.TableName = tabela.NomeSemArroba;
-            objUserObjectMD.Name = tabela.NomeSemArroba;
+            objUserObjectMD.Name = tabela.Descricao;
             objUserObjectMD.Code = tabela.NomeSemArroba;
 
             objUserObjectMD.CanCancel = tabela.CanCancel;

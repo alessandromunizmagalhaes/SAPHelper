@@ -9,6 +9,12 @@ namespace SAPHelper
             return date.ToString("yyyyMMdd");
         }
 
+        public static string ToSAPString(double valor)
+        {
+            //GetSBOBob().Format_MoneyToString(10, BoMoneyPrecisionTypes.mpt_Price);
+            return valor.ToString().Replace(".", "").Replace(",", ".");
+        }
+
         public static DateTime ToDate(string date)
         {
             SBObob sBObob = GetSBOBob();
@@ -36,7 +42,6 @@ namespace SAPHelper
             rs.DoQuery(sql);
             return rs;
         }
-
 
     }
 }
