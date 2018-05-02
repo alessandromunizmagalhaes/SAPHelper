@@ -5,7 +5,7 @@ namespace SAPHelper
 {
     public class TabelaUDO : Tabela
     {
-        public TabelaUDO(string nome, string descricao, BoUTBTableType tipo, List<Coluna> colunas, UDOParams udoParams, List<Tabela> tabelasFilhas = null) : base(nome, descricao, tipo, colunas)
+        public TabelaUDO(string nome, string descricao, BoUTBTableType tipo, UDOParams udoParams, List<Tabela> tabelasFilhas = null) : base(nome, descricao, tipo)
         {
             if (!TipoUDOValido(this))
                 throw new DatabaseException($"Erro ao instanciar tabela UDO. O tipo {tipo} não pode ser utilizado em tabelas UDO.");
@@ -41,19 +41,19 @@ namespace SAPHelper
 
         private static bool TipoUDOValido(Tabela tabela)
         {
-            return tabela.Tipo == BoUTBTableType.bott_Document || tabela.Tipo == BoUTBTableType.bott_MasterData;
+            return tabela.TipoTabela == BoUTBTableType.bott_Document || tabela.TipoTabela == BoUTBTableType.bott_MasterData;
         }
 
         private bool TipoTabelaFilhaIgualTipoTabelaPai(Tabela tabelaFilha, Tabela tabelaPai)
         {
             bool res = false;
-            if (tabelaPai.Tipo == BoUTBTableType.bott_MasterData)
+            if (tabelaPai.TipoTabela == BoUTBTableType.bott_MasterData)
             {
-                res = tabelaFilha.Tipo == BoUTBTableType.bott_MasterDataLines;
+                res = tabelaFilha.TipoTabela == BoUTBTableType.bott_MasterDataLines;
             }
-            else if (tabelaPai.Tipo == BoUTBTableType.bott_Document)
+            else if (tabelaPai.TipoTabela == BoUTBTableType.bott_Document)
             {
-                res = tabelaFilha.Tipo == BoUTBTableType.bott_DocumentLines;
+                res = tabelaFilha.TipoTabela == BoUTBTableType.bott_DocumentLines;
             }
             return res;
         }
@@ -72,11 +72,11 @@ namespace SAPHelper
         {
             get
             {
-                if (Tipo == BoUTBTableType.bott_Document || Tipo == BoUTBTableType.bott_DocumentLines)
+                if (TipoTabela == BoUTBTableType.bott_Document || TipoTabela == BoUTBTableType.bott_DocumentLines)
                 {
                     return BoUDOObjType.boud_Document;
                 }
-                else if (Tipo == BoUTBTableType.bott_MasterData || Tipo == BoUTBTableType.bott_MasterDataLines)
+                else if (TipoTabela == BoUTBTableType.bott_MasterData || TipoTabela == BoUTBTableType.bott_MasterDataLines)
                 {
                     return BoUDOObjType.boud_MasterData;
                 }

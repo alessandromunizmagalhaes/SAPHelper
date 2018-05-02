@@ -1,5 +1,6 @@
 ﻿using SAPbouiCOM;
 using System;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace SAPHelper
@@ -329,7 +330,7 @@ namespace SAPHelper
 		                    WHEN (SELECT COUNT(*) FROM [{tabela_com_arroba}]) = 0
 			                    THEN 1
 		                    ELSE
-			                    (SELECT (MAX({campo})+1) FROM [{tabela_com_arroba}])
+			                    (SELECT (MAX(CONVERT(INT,{campo}))+1) FROM [{tabela_com_arroba}])
 	                    END as ultimo"
             );
 
@@ -367,7 +368,7 @@ namespace SAPHelper
             return true;
         }
 
-        public bool CamposMatrizEstaoPreenchidos(SAPbouiCOM.Form form, DBDataSource dbdts, MatrizForm _matriz)
+        public bool CamposMatrizEstaoValidos(SAPbouiCOM.Form form, DBDataSource dbdts, MatrizForm _matriz)
         {
             try
             {
@@ -403,25 +404,65 @@ namespace SAPHelper
             {
                 if (typeof(IItemFormObrigatorio).IsAssignableFrom(prop.FieldType))
                 {
-                    var propriedadeItemForm = (ItemForm)prop.GetValue(objWithProperties);
-                    var propriedadeInterface = (IItemFormObrigatorio)prop.GetValue(objWithProperties);
-                    for (int i = 0; i < dbdts.Size; i++)
-                    {
-                        var valor = dbdts.GetValue(propriedadeItemForm.Datasource, i).Trim();
-                        var fieldType = dbdts.Fields.Item(propriedadeItemForm.Datasource).Type;
-                        var valido = ValorValido(valor, fieldType);
+                    ValorObrigatorio(dbdts, objWithProperties, prop);
+                }
+                else if (typeof(IItemFormObrigatorioUnico).IsAssignableFrom(prop.FieldType))
+                {
+                    ValorObrigatorioEUnico(dbdts, objWithProperties, prop);
+                }
+            }
+        }
 
-                        if (!valido)
-                        {
-                            var mensagem = !string.IsNullOrEmpty(propriedadeInterface.Mensagem) ? propriedadeInterface.Mensagem : $"Não foi definido uma mensagem para o itemformobrigatorio {propriedadeItemForm.ItemUID}";
-                            throw new FormValidationException(mensagem, propriedadeItemForm.ItemUID, propriedadeInterface.AbaUID, i);
-                        }
+        private void ValorObrigatorio(DBDataSource dbdts, object objWithProperties, System.Reflection.FieldInfo prop)
+        {
+            var propriedadeItemForm = (ItemForm)prop.GetValue(objWithProperties);
+            var propriedadeInterface = (IItemFormObrigatorio)prop.GetValue(objWithProperties);
+            for (int i = 0; i < dbdts.Size; i++)
+            {
+                var valor = dbdts.GetValue(propriedadeItemForm.Datasource, i).Trim();
+                var fieldType = dbdts.Fields.Item(propriedadeItemForm.Datasource).Type;
+                var valido = ValorEstaValido(valor, fieldType);
+
+                if (!valido)
+                {
+                    var mensagem = !string.IsNullOrEmpty(propriedadeInterface.Mensagem) ? propriedadeInterface.Mensagem : $"Não foi definido uma mensagem para o itemformobrigatorio {propriedadeItemForm.ItemUID}";
+                    throw new FormValidationException(mensagem, propriedadeItemForm.ItemUID, propriedadeInterface.AbaUID, i);
+                }
+            }
+        }
+
+        private void ValorObrigatorioEUnico(DBDataSource dbdts, object objWithProperties, System.Reflection.FieldInfo prop)
+        {
+            var valores = new List<string>() { };
+            var propriedadeItemForm = (ItemForm)prop.GetValue(objWithProperties);
+            var propriedadeInterface = (IItemFormObrigatorioUnico)prop.GetValue(objWithProperties);
+            for (int i = 0; i < dbdts.Size; i++)
+            {
+                var valor = dbdts.GetValue(propriedadeItemForm.Datasource, i).Trim();
+                var fieldType = dbdts.Fields.Item(propriedadeItemForm.Datasource).Type;
+                var valido = ValorEstaValido(valor, fieldType);
+
+                if (!valido)
+                {
+                    var mensagem = !string.IsNullOrEmpty(propriedadeInterface.MensagemQuandoObrigatorio) ? propriedadeInterface.MensagemQuandoObrigatorio : $"Não foi definido uma 'mensagem quando obrigatório' para o ItemFormObrigatorioUnico {propriedadeItemForm.ItemUID}";
+                    throw new FormValidationException(mensagem, propriedadeItemForm.ItemUID, propriedadeInterface.AbaUID, i);
+                }
+                else
+                {
+                    if (valores.Contains(valor))
+                    {
+                        var mensagem = !string.IsNullOrEmpty(propriedadeInterface.MensagemQuandoUnico) ? propriedadeInterface.MensagemQuandoUnico : $"Não foi definido uma 'mensagem quando único' para o ItemFormObrigatorioUnico {propriedadeItemForm.ItemUID}";
+                        throw new FormValidationException(mensagem, propriedadeItemForm.ItemUID, propriedadeInterface.AbaUID, i);
+                    }
+                    else
+                    {
+                        valores.Add(valor);
                     }
                 }
             }
         }
 
-        private bool ValorValido(string valor, BoFieldsType fieldType)
+        private bool ValorEstaValido(string valor, BoFieldsType fieldType)
         {
             switch (fieldType)
             {

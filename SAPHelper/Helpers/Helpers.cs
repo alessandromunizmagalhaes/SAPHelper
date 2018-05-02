@@ -9,9 +9,14 @@ namespace SAPHelper
             return date.ToString("yyyyMMdd");
         }
 
-        public static string ToSAPString(double valor)
+        /// <summary>
+        /// Geralmente utilizado para lidar com campo, onde a vírgula é importante como casa decimal e deve ser substituida por ponto
+        /// Ou então para atualizar valor em campo SAP
+        /// </summary>
+        /// <param name="valor">1.234,56</param>
+        /// <returns>1234.56</returns>
+        public static string ToString(double valor)
         {
-            //GetSBOBob().Format_MoneyToString(10, BoMoneyPrecisionTypes.mpt_Price);
             return valor.ToString().Replace(".", "").Replace(",", ".");
         }
 

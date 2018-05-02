@@ -6,6 +6,14 @@ namespace SAPHelper
 {
     public class Database : IDisposable
     {
+        private double _versaoAddon;
+
+        public Database(double versaoAddon)
+        {
+            _versaoAddon = versaoAddon;
+            CriarEstruturaVersionamentoInterna();
+        }
+
         #region :: Gestão de Tabelas
 
         public void CriarTabela(Tabela tabela)
@@ -26,7 +34,7 @@ namespace SAPHelper
             {
                 CriarUserTable(tabela);
 
-                foreach (var coluna in tabela.Colunas)
+                foreach (var coluna in tabela.GetColunas())
                 {
                     if (!ExisteColuna(tabela.NomeComArroba, coluna.Nome))
                     {
@@ -44,7 +52,7 @@ namespace SAPHelper
 
                     DefinirTabelaComoUDO(objUserObjectMD, tabelaUDO);
 
-                    DefinirColunasComoUDO(objUserObjectMD, tabela.NomeSemArroba, tabela.Colunas, true);
+                    DefinirColunasComoUDO(objUserObjectMD, tabela.NomeSemArroba, tabela.GetColunas(), true);
 
                     DefinirTabelasComoFilhasDoUDO(objUserObjectMD, tabela.NomeSemArroba, tabelaUDO.TabelasFilhas);
 
@@ -75,7 +83,7 @@ namespace SAPHelper
         private void DefinirTabelaComoUDO(UserObjectsMD objUserObjectMD, TabelaUDO tabela)
         {
             objUserObjectMD.TableName = tabela.NomeSemArroba;
-            objUserObjectMD.Name = tabela.Descricao;
+            objUserObjectMD.Name = tabela.DescricaoTabela;
             objUserObjectMD.Code = tabela.NomeSemArroba;
 
             objUserObjectMD.CanCancel = tabela.CanCancel;
@@ -96,8 +104,8 @@ namespace SAPHelper
             UserTablesMD oUserTablesMD = Global.Company.GetBusinessObject(BoObjectTypes.oUserTables);
 
             oUserTablesMD.TableName = tabela.NomeSemArroba;
-            oUserTablesMD.TableDescription = tabela.Descricao;
-            oUserTablesMD.TableType = tabela.Tipo;
+            oUserTablesMD.TableDescription = tabela.DescricaoTabela;
+            oUserTablesMD.TableType = tabela.TipoTabela;
 
             if (oUserTablesMD.Add() != 0)
             {
@@ -531,11 +539,33 @@ namespace SAPHelper
         #endregion
 
 
+        #region :: Versionamento
+
+
+        private void CriarEstruturaVersionamentoInterna()
+        {
+            var tabela = new TabelaVersionamento();
+            if (!ExisteTabela(tabela.NomeComArroba))
+            {
+                CriarTabela(tabela);
+            }
+        }
+
+        public double Versao()
+        {
+            return new TabelaVersionamento().GetCurrentVersion();
+        }
+
+        #endregion
+
         #region :: Dispose
 
         public void Dispose()
         {
-            ConfigXML.JaCriouEstrutura = true;
+            if (Versao() != _versaoAddon)
+            {
+                new TabelaVersionamento().InserirNovaVersao(_versaoAddon);
+            }
         }
 
         #endregion

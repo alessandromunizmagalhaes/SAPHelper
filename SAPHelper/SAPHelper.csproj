@@ -58,7 +58,9 @@
     <Compile Include="Database\Coluna\ValorValido.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\Exceções\DatabaseException.cs" />
+    <Compile Include="Database\Tabela\TabelaVersionamento.cs" />
     <Compile Include="Database\Tabela\Tabela.cs" />
+    <Compile Include="Database\Tabela\TabelaCadastroBasico.cs" />
     <Compile Include="Database\Tabela\TabelaUDO.cs" />
     <Compile Include="Database\Tabela\UDOParams.cs" />
     <Compile Include="Dialogs\Dialogs.cs" />
@@ -69,10 +71,12 @@
     <Compile Include="Forms\FormEvents.cs" />
     <Compile Include="Forms\FormValidationException.cs" />
     <Compile Include="Forms\Itens\ButtonForm.cs" />
-    <Compile Include="Forms\Itens\ComboAtivoForm.cs" />
-    <Compile Include="Forms\Itens\ComboForm.cs" />
-    <Compile Include="Forms\Itens\ComboFormObrigatorio.cs" />
+    <Compile Include="Forms\Itens\Combo\ComboAtivoForm.cs" />
+    <Compile Include="Forms\Itens\Combo\ComboForm.cs" />
+    <Compile Include="Forms\Itens\Combo\ComboFormObrigatorioUnico.cs" />
+    <Compile Include="Forms\Itens\Combo\ComboFormObrigatorio.cs" />
     <Compile Include="Forms\Itens\IItemFormObrigatorio.cs" />
+    <Compile Include="Forms\Itens\IItemFormObrigatorioUnico.cs" />
     <Compile Include="Forms\Itens\ItemForm.cs" />
     <Compile Include="Forms\Itens\ItemFormObrigatorio.cs" />
     <Compile Include="Forms\Matriz\MatrizMasterDataForm.cs" />
