@@ -87,6 +87,8 @@
     <Compile Include="Helpers\Helpers.cs" />
     <Compile Include="Menu\Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Versionamento\GerenciadorVersoes.cs" />
+    <Compile Include="Versionamento\Versionamento.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="SAPbobsCOM">

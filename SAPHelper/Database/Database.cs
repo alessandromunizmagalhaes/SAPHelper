@@ -6,11 +6,8 @@ namespace SAPHelper
 {
     public class Database : IDisposable
     {
-        private double _versaoAddon;
-
-        public Database(double versaoAddon)
+        public Database()
         {
-            _versaoAddon = versaoAddon;
             CriarEstruturaVersionamentoInterna();
         }
 
@@ -52,9 +49,9 @@ namespace SAPHelper
 
                     DefinirTabelaComoUDO(objUserObjectMD, tabelaUDO);
 
-                    DefinirColunasComoUDO(objUserObjectMD, tabela.NomeSemArroba, tabela.GetColunas(), true);
+                    DefinirColunasComoUDO(objUserObjectMD, tabela.GetColunas(), true);
 
-                    DefinirTabelasComoFilhasDoUDO(objUserObjectMD, tabela.NomeSemArroba, tabelaUDO.TabelasFilhas);
+                    DefinirTabelasComoFilhasDoUDO(objUserObjectMD, tabelaUDO.TabelasFilhas);
 
                     if (objUserObjectMD.Add() != 0)
                     {
@@ -71,7 +68,7 @@ namespace SAPHelper
             }
         }
 
-        private void DefinirTabelasComoFilhasDoUDO(UserObjectsMD objUserObjectMD, string nomeTabelaPai, List<Tabela> tabelasFilhas)
+        private void DefinirTabelasComoFilhasDoUDO(UserObjectsMD objUserObjectMD, List<Tabela> tabelasFilhas)
         {
             foreach (var tabelaFilha in tabelasFilhas)
             {
@@ -203,7 +200,6 @@ namespace SAPHelper
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="nome_tabela"></param>
         /// <param name="colunas"></param>
         /// <param name="criar_campo_code_antes">
         /// quando se está criando uma nova tabela
@@ -213,7 +209,7 @@ namespace SAPHelper
         /// sempre que for o primeiro, inventa uma coluna ficticia e passa o Code.
         /// horroroso mas é o jeito.
         /// </param>
-        public void DefinirColunasComoUDO(UserObjectsMD objUserObjectMD, string nome_tabela, List<Coluna> colunas, bool criar_campo_code_antes = false)
+        public void DefinirColunasComoUDO(UserObjectsMD objUserObjectMD, List<Coluna> colunas, bool criar_campo_code_antes = false)
         {
             // quando se está criando uma nova tabela
             // tem que fazer essa gambiarra horrível, porque o primeiro elemento a ser colocado como UDO,
@@ -551,21 +547,12 @@ namespace SAPHelper
             }
         }
 
-        public double Versao()
-        {
-            return new TabelaVersionamento().GetCurrentVersion();
-        }
-
         #endregion
 
         #region :: Dispose
 
         public void Dispose()
         {
-            if (Versao() != _versaoAddon)
-            {
-                new TabelaVersionamento().InserirNovaVersao(_versaoAddon);
-            }
         }
 
         #endregion

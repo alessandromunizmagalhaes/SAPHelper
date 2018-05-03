@@ -52,11 +52,20 @@ namespace SAPHelper
             }
         }
 
-        public void RemoverTodosValoresValidados(ValidValues validValues)
+        public void RemoverTodosValoresValidados(ValidValues validValues, bool removerValorDefault = false)
         {
             var count = validValues.Count;
             for (int i = 0; i < count; i++)
             {
+                if (!removerValorDefault)
+                {
+                    string validValue = validValues.Item(i).Value;
+                    if (string.IsNullOrEmpty(validValue))
+                    {
+                        continue;
+                    }
+                }
+
                 validValues.Remove(0, BoSearchKey.psk_Index);
             }
         }

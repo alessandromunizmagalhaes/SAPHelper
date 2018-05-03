@@ -32,15 +32,15 @@ namespace SAPHelper
         public double GetCurrentVersion()
         {
             var rs = Helpers.DoQuery($@"SELECT MAX({Versao.NomeComU_NaFrente}) as versao FROM [{NomeComArroba}]");
-            if (rs.Fields.Item("versao").IsNull() == BoYesNoEnum.tYES)
+            if (rs.Fields.Item("versao").IsNull() == BoYesNoEnum.tNO)
             {
-                // quando for a primeira vez, o max do banco retornará null e essa função
-                // retornará um número maior para que rode todas as versões
-                return 9999.9;
+                return rs.Fields.Item("versao").Value;
             }
             else
             {
-                return rs.Fields.Item("versao").Value;
+                // quando for a primeira vez, o max do banco retornará null e essa função
+                // retornará 0 para que rode todas as versões
+                return 0;
             }
         }
     }
