@@ -65,6 +65,12 @@ namespace SAPHelper
                     objUserObjectMD = null;
                     GC.Collect();
                 }
+
+                if (tabela is ITabelaPopulavel)
+                {
+                    var tabelaPopulavel = tabela as ITabelaPopulavel;
+                    tabelaPopulavel.Popular();
+                }
             }
         }
 

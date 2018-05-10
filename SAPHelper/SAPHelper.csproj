@@ -58,6 +58,7 @@
     <Compile Include="Database\Coluna\ValorValido.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\Exceções\DatabaseException.cs" />
+    <Compile Include="Database\Tabela\ITabelaPopulavel.cs" />
     <Compile Include="Database\Tabela\TabelaVersionamento.cs" />
     <Compile Include="Database\Tabela\Tabela.cs" />
     <Compile Include="Database\Tabela\TabelaCadastroBasico.cs" />
