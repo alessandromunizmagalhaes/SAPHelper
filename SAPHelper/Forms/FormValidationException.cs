@@ -13,7 +13,7 @@ namespace SAPHelper
         private int _datasourceRow;
         public int DatasourceRow { get { return _datasourceRow; } }
 
-        public FormValidationException(string message, string campo, string abaUID, int datasourceRow = 0) : base(message)
+        public FormValidationException(string message, string campo, string abaUID = "", int datasourceRow = 0) : base(message)
         {
             _campo = campo;
             _abaUID = abaUID;
