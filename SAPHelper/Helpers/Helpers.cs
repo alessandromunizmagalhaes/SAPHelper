@@ -31,6 +31,11 @@ namespace SAPHelper
             return Convert.ToDouble(value, System.Globalization.CultureInfo.InvariantCulture);
         }
 
+        public static int ToInt(string value)
+        {
+            return Convert.ToInt32(value, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
         private static SBObob GetSBOBob()
         {
             return Global.Company.GetBusinessObject(BoObjectTypes.BoBridge);

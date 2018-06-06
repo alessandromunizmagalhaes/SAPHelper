@@ -224,6 +224,22 @@ namespace SAPHelper
 
                     #endregion
 
+                    #region :: MATRIX_LINK_PRESSED
+
+                    else if (pVal.EventType == BoEventTypes.et_MATRIX_LINK_PRESSED)
+                    {
+                        if (Events.Antes(pVal))
+                        {
+                            ((Form)FormObjType).OnBeforeMatrixLinkPressed(FormUID, ref pVal, out BubbleEvent);
+                        }
+                        else if (Events.Depois(pVal) && pVal.ActionSuccess)
+                        {
+                            ((Form)FormObjType).OnAfterMatrixLinkPressed(FormUID, ref pVal, out BubbleEvent);
+                        }
+                    }
+
+                    #endregion
+
                 }
             }
             catch (Exception e)

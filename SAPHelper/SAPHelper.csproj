@@ -80,6 +80,7 @@
     <Compile Include="Forms\Itens\IItemFormObrigatorioUnico.cs" />
     <Compile Include="Forms\Itens\ItemForm.cs" />
     <Compile Include="Forms\Itens\ItemFormObrigatorio.cs" />
+    <Compile Include="Forms\Matriz\MatrizDatatable.cs" />
     <Compile Include="Forms\Matriz\MatrizMasterDataForm.cs" />
     <Compile Include="Forms\Matriz\MatrizChildForm.cs" />
     <Compile Include="Forms\MapEventsToForms.cs" />

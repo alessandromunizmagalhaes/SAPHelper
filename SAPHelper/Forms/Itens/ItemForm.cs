@@ -56,7 +56,5 @@ namespace SAPHelper
             }
             dbdts.SetValue(Datasource, row, valorFinal);
         }
-
-
     }
 }

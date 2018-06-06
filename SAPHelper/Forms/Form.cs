@@ -1,6 +1,7 @@
 ﻿using SAPbouiCOM;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml;
 
 namespace SAPHelper
@@ -151,7 +152,6 @@ namespace SAPHelper
         #endregion
 
 
-
         #region :: Validate
 
 
@@ -211,6 +211,20 @@ namespace SAPHelper
         #endregion
 
 
+        #region :: Matrix Linked Pressed
+
+        public virtual void OnBeforeMatrixLinkPressed(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterMatrixLinkPressed(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
         #region :: Eventos Internos
 
         public virtual void _OnAdicionarNovo(SAPbouiCOM.Form form)
@@ -237,7 +251,14 @@ namespace SAPHelper
         {
             SAPbouiCOM.Form oForm = CreationPackage(sfr_path);
 
-            var fatherFormUIDField = formFilho.GetType().GetField("_fatherFormUID");
+            // usando esses bindingflags porque se o formFilho for derivado/herdade de uma classe pai
+            // e nessa classe pai estiver o _fatherFormUID, sem esses bindingflags ele não enxerga
+            // porque não é uma propriedade do filho e sim do pai
+            // colocando esses bindingflags resolve
+            // https://stackoverflow.com/questions/1325280/c-sharp-reflection-base-class-static-fields-in-derived-type
+            var fatherFormUIDField = formFilho.GetType().GetField("_fatherFormUID", BindingFlags.Static
+             | BindingFlags.FlattenHierarchy
+             | BindingFlags.Public);
             if (fatherFormUIDField != null)
             {
                 fatherFormUIDField.SetValue(formFilho, fatherFormUID);
@@ -297,6 +318,17 @@ namespace SAPHelper
             return form.DataSources.DBDataSources.Item(dbdts_name);
         }
 
+        protected DataTable GetDatatable(SAPbouiCOM.Form form, string datatable_name)
+        {
+            return form.DataSources.DataTables.Item(datatable_name);
+        }
+
+        protected DataTable GetDatatable(string formUID, string datatable_name)
+        {
+            SAPbouiCOM.Form form = GetForm(formUID);
+            return form.DataSources.DataTables.Item(datatable_name);
+        }
+
         protected Matrix GetMatrix(string formUID, string matrixUID)
         {
             SAPbouiCOM.Form form = GetForm(formUID);
@@ -318,6 +350,36 @@ namespace SAPHelper
                 {
                     string value = dbdts_from.GetValue(j, i);
                     dbdts_to.SetValue(j, i, value);
+                }
+            }
+        }
+
+        protected void CopyIfFieldsMatch(DBDataSource dbdts_from, ref DBDataSource dbdts_to)
+        {
+            var rs = Helpers.DoQuery(
+                $@"SELECT 
+	                tb1.COLUMN_NAME
+                FROM INFORMATION_SCHEMA.COLUMNS tb1
+                INNER JOIN INFORMATION_SCHEMA.COLUMNS tb2 ON (tb2.COLUMN_NAME = tb1.COLUMN_NAME)
+                WHERE 1 = 1
+                    AND tb1.TABLE_NAME = '{dbdts_from.TableName}' AND tb2.TABLE_NAME = '{dbdts_to.TableName}'
+                    AND tb1.COLUMN_NAME NOT IN 
+                        ('Canceled','CreateDate','CreateTime',
+                        'DataSource','DocEntry','LogInst','Object','Transfered',
+                        'UpdateDate','UpdateTime','UserSign')"
+                        );
+
+            dbdts_to.Clear();
+            for (int i = 0; i < dbdts_from.Size; i++)
+            {
+                dbdts_to.InsertRecord(i);
+                while (!rs.EoF)
+                {
+                    var campo = rs.Fields.Item("COLUMN_NAME").Value;
+                    string value = dbdts_from.GetValue(campo, i);
+                    dbdts_to.SetValue(campo, i, value);
+
+                    rs.MoveNext();
                 }
             }
         }

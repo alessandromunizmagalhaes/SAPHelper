@@ -59,7 +59,7 @@ namespace SAPHelper
             {
                 if (!removerValorDefault)
                 {
-                    string validValue = validValues.Item(i).Value;
+                    string validValue = validValues.Item(0).Value;
                     if (string.IsNullOrEmpty(validValue))
                     {
                         continue;
