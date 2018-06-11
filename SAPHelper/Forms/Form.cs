@@ -240,14 +240,14 @@ namespace SAPHelper
 
         #region :: Utils
 
-        public static void CriarForm(string sfr_path)
+        public static void CriarForm(string sfr_path, CriarFormParams criarFormParams = null)
         {
             SAPbouiCOM.Form oForm = CreationPackage(sfr_path);
 
-            oForm.Visible = true;
+            AplicarFormParams(oForm, criarFormParams);
         }
 
-        public static void CriarFormFilho(string sfr_path, string fatherFormUID, Form formFilho)
+        public static void CriarFormFilho(string sfr_path, string fatherFormUID, Form formFilho, CriarFormParams criarFormParams = null)
         {
             SAPbouiCOM.Form oForm = CreationPackage(sfr_path);
 
@@ -263,11 +263,41 @@ namespace SAPHelper
             {
                 fatherFormUIDField.SetValue(formFilho, fatherFormUID);
 
-                oForm.Visible = true;
+                AplicarFormParams(oForm, criarFormParams);
             }
             else
             {
                 Dialogs.PopupError("Erro interno. Erro de desenvolvimento.\nField estático '_fatherFormUID' não encontrado na classe filha");
+            }
+        }
+
+        private static void AplicarFormParams(SAPbouiCOM.Form oForm, CriarFormParams criarFormParams)
+        {
+            bool criarParamsNotNull = criarFormParams != null;
+            if (criarParamsNotNull)
+            {
+                oForm.Mode = criarFormParams.Mode;
+            }
+
+            oForm.Visible = true;
+
+            if (criarParamsNotNull && criarFormParams.FindParams != null)
+            {
+                try
+                {
+                    oForm.Freeze(true);
+                    var findParams = criarFormParams.FindParams;
+                    oForm.Items.Item(findParams.chavePrimariaUID).Specific.Value = findParams.chavePrimariaValor;
+                    oForm.Items.Item("1").Click();
+                }
+                catch (Exception e)
+                {
+                    Dialogs.PopupError($"Erro de desenvolvimento.\nErro ao tentar encontrato o registro.\nErro: " + e.Message);
+                }
+                finally
+                {
+                    oForm.Freeze(false);
+                }
             }
         }
 
@@ -298,9 +328,10 @@ namespace SAPHelper
             SAPbouiCOM.Form form = null;
             for (int i = 0; i < Global.SBOApplication.Forms.Count; i++)
             {
-                if (Global.SBOApplication.Forms.Item(i).UniqueID == formUID)
+                var currentForm = Global.SBOApplication.Forms.Item(i);
+                if (currentForm.UniqueID == formUID)
                 {
-                    form = GetForm(formUID);
+                    form = currentForm;
                     break;
                 }
             }
@@ -364,7 +395,7 @@ namespace SAPHelper
                 WHERE 1 = 1
                     AND tb1.TABLE_NAME = '{dbdts_from.TableName}' AND tb2.TABLE_NAME = '{dbdts_to.TableName}'
                     AND tb1.COLUMN_NAME NOT IN 
-                        ('Canceled','CreateDate','CreateTime',
+                        ('Code','Name','Canceled','CreateDate','CreateTime',
                         'DataSource','DocEntry','LogInst','Object','Transfered',
                         'UpdateDate','UpdateTime','UserSign')"
                         );

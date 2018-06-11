@@ -67,10 +67,13 @@
     <Compile Include="Dialogs\Dialogs.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Events\Events.cs" />
+    <Compile Include="Forms\CriarFormFindParams.cs" />
+    <Compile Include="Forms\CriarFormParams.cs" />
+    <Compile Include="Forms\Exceptions\BusinessRuleException.cs" />
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\FormCadastroBasico.cs" />
     <Compile Include="Forms\FormEvents.cs" />
-    <Compile Include="Forms\FormValidationException.cs" />
+    <Compile Include="Forms\Exceptions\FormValidationException.cs" />
     <Compile Include="Forms\Itens\ButtonForm.cs" />
     <Compile Include="Forms\Itens\Combo\ComboAtivoForm.cs" />
     <Compile Include="Forms\Itens\Combo\ComboForm.cs" />
