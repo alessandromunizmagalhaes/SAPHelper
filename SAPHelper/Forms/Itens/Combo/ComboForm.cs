@@ -1,11 +1,13 @@
 ﻿using SAPbouiCOM;
 using System;
+using System.Collections.Generic;
 
 namespace SAPHelper
 {
     public class ComboForm : ItemForm
     {
         public string SQL { get; set; }
+        public Dictionary<string, string> ValoresPadrao { get; set; }
 
         public void Popular(SAPbouiCOM.Form form)
         {
@@ -46,9 +48,16 @@ namespace SAPHelper
                     rs.MoveNext();
                 }
             }
+            else if (ValoresPadrao != null)
+            {
+                foreach (var item in ValoresPadrao)
+                {
+                    validValues.Add(item.Key, item.Value);
+                }
+            }
             else
             {
-                throw new MissingFieldException($"Faltando a propriedade SQL do Item {ItemUID}");
+                throw new MissingFieldException($"Nenhum método de população (SQL ou ValorPadrão) foi definido para o Item {ItemUID}");
             }
         }
 
