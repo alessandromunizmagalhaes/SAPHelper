@@ -152,6 +152,22 @@ namespace SAPHelper
         #endregion
 
 
+
+        #region :: Double Click
+
+
+        public virtual void OnBeforeDoubleClick(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterDoubleClick(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
         #region :: Validate
 
 
@@ -412,6 +428,8 @@ namespace SAPHelper
 
                     rs.MoveNext();
                 }
+
+                rs.MoveFirst();
             }
         }
 

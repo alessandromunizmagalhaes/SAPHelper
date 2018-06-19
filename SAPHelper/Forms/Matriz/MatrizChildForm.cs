@@ -28,7 +28,7 @@ namespace SAPHelper
             }
         }
 
-        public void RemoverLinha(SAPbouiCOM.Form form, DBDataSource dbdts)
+        public void RemoverLinhaSelecionada(SAPbouiCOM.Form form, DBDataSource dbdts)
         {
             var mtx = ((Matrix)form.Items.Item(ItemUID).Specific);
 

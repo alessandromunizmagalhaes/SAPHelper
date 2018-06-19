@@ -176,6 +176,22 @@ namespace SAPHelper
 
                     #endregion
 
+                    #region :: Double Click
+
+                    else if (pVal.EventType == BoEventTypes.et_DOUBLE_CLICK)
+                    {
+                        if (Events.Antes(pVal))
+                        {
+                            ((Form)FormObjType).OnBeforeDoubleClick(FormUID, ref pVal, out BubbleEvent);
+                        }
+                        else if (Events.Depois(pVal) && pVal.ActionSuccess)
+                        {
+                            ((Form)FormObjType).OnAfterDoubleClick(FormUID, ref pVal, out BubbleEvent);
+                        }
+                    }
+
+                    #endregion
+
                     #region :: Validate
 
                     else if (pVal.EventType == BoEventTypes.et_VALIDATE)
