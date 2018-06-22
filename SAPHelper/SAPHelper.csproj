@@ -73,6 +73,7 @@
     <Compile Include="Forms\FormCadastroBasico.cs" />
     <Compile Include="Forms\FormEvents.cs" />
     <Compile Include="Forms\Exceptions\FormValidationException.cs" />
+    <Compile Include="Forms\Itens\Abas\TabsForm.cs" />
     <Compile Include="Forms\Itens\ButtonForm.cs" />
     <Compile Include="Forms\Itens\Combo\ComboAtivoForm.cs" />
     <Compile Include="Forms\Itens\Combo\ComboForm.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Forms\Itens\IItemFormObrigatorioUnico.cs" />
     <Compile Include="Forms\Itens\ItemForm.cs" />
     <Compile Include="Forms\Itens\ItemFormObrigatorio.cs" />
+    <Compile Include="Forms\Itens\Abas\TabForm.cs" />
     <Compile Include="Forms\Matriz\MatrizDatatable.cs" />
     <Compile Include="Forms\Matriz\MatrizMasterDataForm.cs" />
     <Compile Include="Forms\Matriz\MatrizChildForm.cs" />
