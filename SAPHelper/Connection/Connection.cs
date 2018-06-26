@@ -100,5 +100,28 @@ namespace SAPHelper
             // Establish the connection to the company database.
             return oCompany.Connect();
         }
+
+
+        public static void GetDICompany()
+        {
+            var SboGuiApi = new SboGuiApi();
+            var connectionString = string.Empty;
+            try
+            {
+                if (Environment.GetCommandLineArgs().Length > 1)
+                    connectionString = Environment.GetCommandLineArgs().GetValue(1).ToString();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Não foi possível buscar a string de conexão com o SAP.\nErro: " + e.Message);
+            }
+
+            SboGuiApi.Connect(connectionString);
+            var SBO_Application = SboGuiApi.GetApplication();
+            var oCompany = SBO_Application.Company.GetDICompany();
+
+            Global.RecebeSBOApplication(SBO_Application);
+            Global.RecebeCompany(oCompany);
+        }
     }
 }

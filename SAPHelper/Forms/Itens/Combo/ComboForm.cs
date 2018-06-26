@@ -40,12 +40,15 @@ namespace SAPHelper
         {
             if (!string.IsNullOrEmpty(SQL))
             {
-                var rs = Helpers.DoQuery(SQL);
-                while (!rs.EoF)
+                using (var recordset = new RecordSet())
                 {
-                    validValues.Add(rs.Fields.Item(0).Value.ToString(), rs.Fields.Item(1).Value.ToString());
+                    var rs = recordset.DoQuery(SQL);
+                    while (!rs.EoF)
+                    {
+                        validValues.Add(rs.Fields.Item(0).Value.ToString(), rs.Fields.Item(1).Value.ToString());
 
-                    rs.MoveNext();
+                        rs.MoveNext();
+                    }
                 }
             }
             else if (ValoresPadrao != null)

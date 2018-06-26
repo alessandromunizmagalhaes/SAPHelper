@@ -46,12 +46,13 @@ namespace SAPHelper
             return Global.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
         }
 
+        /*
         public static Recordset DoQuery(string sql)
         {
             var rs = GetRecordset();
             rs.DoQuery(sql);
             return rs;
         }
-
+        */
     }
 }

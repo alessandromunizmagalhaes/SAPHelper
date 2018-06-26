@@ -1,4 +1,5 @@
 ﻿using SAPbouiCOM;
+using System;
 
 namespace SAPHelper
 {
@@ -15,6 +16,16 @@ namespace SAPHelper
         public static void RecebeCompany(SAPbobsCOM.Company company)
         {
             Company = company;
+        }
+
+        public static void ReleaseObjectFromMemory(object o)
+        {
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(o);
+            if (o != null)
+            {
+                o = null;
+            }
+            GC.Collect();
         }
     }
 }

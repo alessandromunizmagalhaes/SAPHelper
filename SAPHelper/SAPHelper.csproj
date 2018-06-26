@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="COMObjects\DBDatasource.cs" />
+    <Compile Include="COMObjects\RecordSet.cs" />
     <Compile Include="Connection\Connection.cs" />
     <Compile Include="Database\Coluna\Coluna.cs" />
     <Compile Include="Database\Coluna\ColunaAtivo.cs" />

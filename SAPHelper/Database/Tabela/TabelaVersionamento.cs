@@ -14,8 +14,10 @@ namespace SAPHelper
 
         public void InserirNovaVersao(double novaVersao)
         {
-            string insert =
-                $@"DECLARE @table_id INT;
+            using (var recordset = new RecordSet())
+            {
+                string insert =
+                    $@"DECLARE @table_id INT;
 					IF(SELECT COUNT(*) FROM [{NomeComArroba}]) > 0
 						SELECT @table_id = (SELECT TOP (1) (CAST(Code as INT) + 1) FROM [{NomeComArroba}] ORDER BY CAST(Code as INT) DESC) 
 					ELSE
@@ -26,21 +28,25 @@ namespace SAPHelper
 							VALUES
 							    (@table_id, @table_id, GETDATE(), {Helpers.ToString(novaVersao)});";
 
-            Helpers.DoQuery(insert);
+                recordset.DoQuery(insert);
+            }
         }
 
         public double GetCurrentVersion()
         {
-            var rs = Helpers.DoQuery($@"SELECT MAX({Versao.NomeComU_NaFrente}) as versao FROM [{NomeComArroba}]");
-            if (rs.Fields.Item("versao").IsNull() == BoYesNoEnum.tNO)
+            using (var recordset = new RecordSet())
             {
-                return rs.Fields.Item("versao").Value;
-            }
-            else
-            {
-                // quando for a primeira vez, o max do banco retornará null e essa função
-                // retornará 0 para que rode todas as versões
-                return 0;
+                var rs = recordset.DoQuery($@"SELECT MAX({Versao.NomeComU_NaFrente}) as versao FROM [{NomeComArroba}]");
+                if (rs.Fields.Item("versao").IsNull() == BoYesNoEnum.tNO)
+                {
+                    return rs.Fields.Item("versao").Value;
+                }
+                else
+                {
+                    // quando for a primeira vez, o max do banco retornará null e essa função
+                    // retornará 0 para que rode todas as versões
+                    return 0;
+                }
             }
         }
     }

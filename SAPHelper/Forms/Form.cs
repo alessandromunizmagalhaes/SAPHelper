@@ -401,9 +401,17 @@ namespace SAPHelper
             }
         }
 
-        protected void CopyIfFieldsMatch(DBDataSource dbdts_from, ref DBDataSource dbdts_to)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dbdts_from"></param>
+        /// <param name="dbdts_to"></param>
+        /// <param name="fieldsNotIn">campos separados por virgula para já imbutir no notin, exemplo: ",'campo1','campo2','campo3'"</param>
+        protected void CopyIfFieldsMatch(DBDataSource dbdts_from, ref DBDataSource dbdts_to, string fieldsNotIn = "")
         {
-            var rs = Helpers.DoQuery(
+            using (var recordset = new RecordSet())
+            {
+                var rs = recordset.DoQuery(
                 $@"SELECT 
 	                tb1.COLUMN_NAME
                 FROM INFORMATION_SCHEMA.COLUMNS tb1
@@ -413,29 +421,32 @@ namespace SAPHelper
                     AND tb1.COLUMN_NAME NOT IN 
                         ('Code','Name','Canceled','CreateDate','CreateTime',
                         'DataSource','DocEntry','LogInst','Object','Transfered',
-                        'UpdateDate','UpdateTime','UserSign')"
+                        'UpdateDate','UpdateTime','UserSign' {fieldsNotIn})"
                         );
 
-            dbdts_to.Clear();
-            for (int i = 0; i < dbdts_from.Size; i++)
-            {
-                dbdts_to.InsertRecord(i);
-                while (!rs.EoF)
+                dbdts_to.Clear();
+                for (int i = 0; i < dbdts_from.Size; i++)
                 {
-                    var campo = rs.Fields.Item("COLUMN_NAME").Value;
-                    string value = dbdts_from.GetValue(campo, i);
-                    dbdts_to.SetValue(campo, i, value);
+                    dbdts_to.InsertRecord(i);
+                    while (!rs.EoF)
+                    {
+                        var campo = rs.Fields.Item("COLUMN_NAME").Value;
+                        string value = dbdts_from.GetValue(campo, i);
+                        dbdts_to.SetValue(campo, i, value);
 
-                    rs.MoveNext();
+                        rs.MoveNext();
+                    }
+
+                    rs.MoveFirst();
                 }
-
-                rs.MoveFirst();
             }
         }
 
         protected string GetNextPrimaryKey(string tabela_com_arroba, string campo)
         {
-            var rs = Helpers.DoQuery(
+            using (var recordset = new RecordSet())
+            {
+                var rs = recordset.DoQuery(
                 $@"SELECT 
 	                    CASE 
 		                    WHEN (SELECT COUNT(*) FROM [{tabela_com_arroba}]) = 0
@@ -443,9 +454,10 @@ namespace SAPHelper
 		                    ELSE
 			                    (SELECT (MAX(CONVERT(INT,{campo}))+1) FROM [{tabela_com_arroba}])
 	                    END as ultimo"
-            );
+                );
 
-            return rs.Fields.Item(0).Value.ToString();
+                return rs.Fields.Item(0).Value.ToString();
+            }
         }
 
         protected string GetNextCode(string tabela_com_arroba)
