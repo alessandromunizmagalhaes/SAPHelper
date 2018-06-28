@@ -13,6 +13,8 @@ namespace SAPHelper
                 var mtx = ((Matrix)form.Items.Item(ItemUID).Specific);
                 mtx.AddRow();
                 mtx.ClearRowData(mtx.RowCount);
+
+                ClicarNaUltimaLinha(mtx);
             }
             finally
             {

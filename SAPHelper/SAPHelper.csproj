@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="COMObjects\DBDatasource.cs" />
+    <Compile Include="COMObjects\FormCOM.cs" />
     <Compile Include="COMObjects\RecordSet.cs" />
     <Compile Include="Connection\Connection.cs" />
     <Compile Include="Database\Coluna\Coluna.cs" />

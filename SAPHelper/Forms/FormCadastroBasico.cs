@@ -29,8 +29,11 @@ namespace SAPHelper
         public override void OnAfterFormVisible(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
         {
             BubbleEvent = true;
-            var form = GetForm(FormUID);
-            _OnAdicionarNovo(form);
+            using (var formCOM = new FormCOM(FormUID))
+            {
+                var form = formCOM.Form;
+                _OnAdicionarNovo(form);
+            }
         }
 
         #endregion
@@ -42,23 +45,29 @@ namespace SAPHelper
         {
             BubbleEvent = true;
 
-            var form = GetForm(BusinessObjectInfo.FormUID);
-            var dbdts = GetDBDatasource(form, mainDbDataSource);
+            using (var formCOM = new FormCOM(BusinessObjectInfo.FormUID))
+            {
+                var form = formCOM.Form;
+                var dbdts = GetDBDatasource(form, mainDbDataSource);
 
-            string nextCode = GetNextCode(mainDbDataSource);
-            dbdts.SetValue(_codigo.ItemUID, 0, nextCode);
+                string nextCode = GetNextCode(mainDbDataSource);
+                dbdts.SetValue(_codigo.ItemUID, 0, nextCode);
 
-            BubbleEvent = CamposFormEstaoPreenchidos(form, dbdts);
+                BubbleEvent = CamposFormEstaoPreenchidos(form, dbdts);
+            }
         }
 
         public override void OnBeforeFormDataUpdate(ref BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
         {
             BubbleEvent = true;
 
-            var form = GetForm(BusinessObjectInfo.FormUID);
-            var dbdts = GetDBDatasource(form, mainDbDataSource);
+            using (var formCOM = new FormCOM(BusinessObjectInfo.FormUID))
+            {
+                var form = formCOM.Form;
+                var dbdts = GetDBDatasource(form, mainDbDataSource);
 
-            BubbleEvent = CamposFormEstaoPreenchidos(form, dbdts);
+                BubbleEvent = CamposFormEstaoPreenchidos(form, dbdts);
+            }
         }
 
         #endregion

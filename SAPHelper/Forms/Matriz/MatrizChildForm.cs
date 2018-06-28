@@ -17,6 +17,8 @@ namespace SAPHelper
                 dbdts.InsertRecord(dbdts.Size);
                 ReArrangeLineId(dbdts);
                 mtx.LoadFromDataSourceEx();
+
+                ClicarNaUltimaLinha(mtx);
             }
             catch (Exception e)
             {

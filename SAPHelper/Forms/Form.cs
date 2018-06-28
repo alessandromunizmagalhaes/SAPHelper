@@ -329,10 +329,12 @@ namespace SAPHelper
             return oForm;
         }
 
+        /*
         protected SAPbouiCOM.Form GetForm(string formUID)
         {
             return Global.SBOApplication.Forms.Item(formUID);
         }
+        */
 
         /// <summary>
         /// 
@@ -361,8 +363,11 @@ namespace SAPHelper
 
         protected DBDataSource GetDBDatasource(string formUID, string dbdts_name)
         {
-            SAPbouiCOM.Form form = GetForm(formUID);
-            return form.DataSources.DBDataSources.Item(dbdts_name);
+            using (var formCOM = new FormCOM(formUID))
+            {
+                SAPbouiCOM.Form form = formCOM.Form;
+                return form.DataSources.DBDataSources.Item(dbdts_name);
+            }
         }
 
         protected DataTable GetDatatable(SAPbouiCOM.Form form, string datatable_name)
@@ -372,14 +377,20 @@ namespace SAPHelper
 
         protected DataTable GetDatatable(string formUID, string datatable_name)
         {
-            SAPbouiCOM.Form form = GetForm(formUID);
-            return form.DataSources.DataTables.Item(datatable_name);
+            using (var formCOM = new FormCOM(formUID))
+            {
+                SAPbouiCOM.Form form = formCOM.Form;
+                return form.DataSources.DataTables.Item(datatable_name);
+            }
         }
 
         protected Matrix GetMatrix(string formUID, string matrixUID)
         {
-            SAPbouiCOM.Form form = GetForm(formUID);
-            return GetMatrix(form, matrixUID);
+            using (var formCOM = new FormCOM(formUID))
+            {
+                SAPbouiCOM.Form form = formCOM.Form;
+                return GetMatrix(form, matrixUID);
+            }
         }
 
         protected Matrix GetMatrix(SAPbouiCOM.Form form, string matrixUID)
@@ -624,11 +635,14 @@ namespace SAPHelper
             {
                 var fatherDbdts = GetDBDatasource(fatherForm, dbdts_name_compartilhado);
 
-                var localForm = GetForm(localFormUID);
-                ((Matrix)localForm.Items.Item(localMatrixUID).Specific).FlushToDataSource();
-                var localDbdts = GetDBDatasource(localForm, dbdts_name_compartilhado);
+                using (var formCOM = new FormCOM(localFormUID))
+                {
+                    SAPbouiCOM.Form localForm = formCOM.Form;
+                    ((Matrix)localForm.Items.Item(localMatrixUID).Specific).FlushToDataSource();
+                    var localDbdts = GetDBDatasource(localForm, dbdts_name_compartilhado);
 
-                Copy(localDbdts, ref fatherDbdts);
+                    Copy(localDbdts, ref fatherDbdts);
+                }
             }
         }
 
@@ -636,13 +650,16 @@ namespace SAPHelper
         {
             var localDbdts = GetDBDatasource(localForm, dbdts_name_compartilhado);
 
-            var fatherForm = GetForm(fatherFormUID);
-            var fatherDbdts = GetDBDatasource(fatherForm, dbdts_name_compartilhado);
+            using (var formCOM = new FormCOM(fatherFormUID))
+            {
+                SAPbouiCOM.Form fatherForm = formCOM.Form;
+                var fatherDbdts = GetDBDatasource(fatherForm, dbdts_name_compartilhado);
 
-            Copy(fatherDbdts, ref localDbdts);
+                Copy(fatherDbdts, ref localDbdts);
 
-            var mtx = ((Matrix)localForm.Items.Item(localMatrixUID).Specific);
-            mtx.LoadFromDataSourceEx(true);
+                var mtx = ((Matrix)localForm.Items.Item(localMatrixUID).Specific);
+                mtx.LoadFromDataSourceEx(true);
+            }
         }
 
         #endregion
