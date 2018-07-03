@@ -34,12 +34,15 @@ namespace SAPHelper
 
         protected void ClicarNaUltimaLinha(Matrix mtx)
         {
-            for (int i = 0; i < mtx.Columns.Count; i++)
+            if (mtx.RowCount > 0)
             {
-                if (mtx.Columns.Item(i).Editable)
+                for (int i = 0; i < mtx.Columns.Count; i++)
                 {
-                    mtx.Columns.Item(i).Cells.Item(mtx.RowCount).Click();
-                    break;
+                    if (mtx.Columns.Item(i).Editable)
+                    {
+                        mtx.Columns.Item(i).Cells.Item(mtx.RowCount).Click();
+                        break;
+                    }
                 }
             }
         }

@@ -251,6 +251,16 @@ namespace SAPHelper
         {
         }
 
+        protected void DesabilitarMenuAdicionarNovo(SAPbouiCOM.Form form)
+        {
+            form.EnableMenu(((int)EventosInternos.AdicionarNovo).ToString(), false);
+        }
+
+        protected void DesabilitarMenuPesquisar(SAPbouiCOM.Form form)
+        {
+            form.EnableMenu(((int)EventosInternos.Pesquisar).ToString(), false);
+        }
+
         #endregion
 
 

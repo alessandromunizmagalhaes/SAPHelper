@@ -14,9 +14,12 @@ namespace SAPHelper
             {
                 form.Freeze(true);
 
-                dbdts.InsertRecord(dbdts.Size);
-                ReArrangeLineId(dbdts);
-                mtx.LoadFromDataSourceEx();
+                if (ultimaLinhaEstaPreenchida(mtx))
+                {
+                    dbdts.InsertRecord(dbdts.Size);
+                    ReArrangeLineId(dbdts);
+                    mtx.LoadFromDataSourceEx();
+                }
 
                 ClicarNaUltimaLinha(mtx);
             }
@@ -28,6 +31,25 @@ namespace SAPHelper
             {
                 form.Freeze(false);
             }
+        }
+
+        private bool ultimaLinhaEstaPreenchida(Matrix mtx)
+        {
+            var res = false;
+            if (mtx.RowCount > 0)
+            {
+                for (int i = 0; i < mtx.Columns.Count; i++)
+                {
+                    if (mtx.Columns.Item(i).Editable)
+                    {
+                        string valor = mtx.GetCellSpecific(i, mtx.RowCount).Value.ToString();
+                        res = !String.IsNullOrEmpty(valor);
+                        break;
+                    }
+                }
+            }
+
+            return res;
         }
 
         public void RemoverLinhaSelecionada(SAPbouiCOM.Form form, DBDataSource dbdts)

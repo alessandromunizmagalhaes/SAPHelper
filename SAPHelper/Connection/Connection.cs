@@ -101,7 +101,6 @@ namespace SAPHelper
             return oCompany.Connect();
         }
 
-
         public static void GetDICompany()
         {
             var SboGuiApi = new SboGuiApi();
