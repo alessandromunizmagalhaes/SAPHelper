@@ -6,6 +6,7 @@ namespace SAPHelper
     public class RecordSet : IDisposable
     {
         private Recordset rs;
+        public Recordset Recordset { get { return rs; } }
 
         public RecordSet()
         {

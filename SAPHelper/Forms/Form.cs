@@ -251,6 +251,14 @@ namespace SAPHelper
         {
         }
 
+        public virtual void _OnDuplicar(SAPbouiCOM.Form form)
+        {
+        }
+
+        public virtual void _OnCancelar(SAPbouiCOM.Form form)
+        {
+        }
+
         protected void DesabilitarMenuAdicionarNovo(SAPbouiCOM.Form form)
         {
             form.EnableMenu(((int)EventosInternos.AdicionarNovo).ToString(), false);

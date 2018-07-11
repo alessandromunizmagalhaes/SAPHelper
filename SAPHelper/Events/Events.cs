@@ -4,6 +4,8 @@
     {
         AdicionarNovo = 1282,
         Pesquisar = 1281,
+        Cancelar = 1284,
+        Duplicar = 1287
     }
 
     public static class Events

@@ -76,6 +76,14 @@ namespace SAPHelper
                         {
                             ((Form)formObjType)._OnPesquisar(form);
                         }
+                        else if (eventoInterno == EventosInternos.Duplicar)
+                        {
+                            ((Form)formObjType)._OnDuplicar(form);
+                        }
+                        else if (eventoInterno == EventosInternos.Cancelar)
+                        {
+                            ((Form)formObjType)._OnCancelar(form);
+                        }
                     }
                 }
             }

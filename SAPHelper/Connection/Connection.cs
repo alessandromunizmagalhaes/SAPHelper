@@ -8,7 +8,7 @@ namespace SAPHelper
         public static Application SBOApplication;
         public static SAPbobsCOM.Company oCompany;
 
-        public delegate void SBOApplicationHandler(SAPbouiCOM.Application SBOApplication);
+        public delegate void SBOApplicationHandler(Application SBOApplication);
         public static SBOApplicationHandler applicationHandler;
 
         public delegate void CompanyHandler(SAPbobsCOM.Company Company);
