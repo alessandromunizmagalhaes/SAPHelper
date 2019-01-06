@@ -176,6 +176,22 @@ namespace SAPHelper
 
                     #endregion
 
+                    #region :: Lost Focus
+
+                    else if (pVal.EventType == BoEventTypes.et_LOST_FOCUS)
+                    {
+                        if (Events.Antes(pVal))
+                        {
+                            ((Form)FormObjType).OnBeforeLostFocus(FormUID, ref pVal, out BubbleEvent);
+                        }
+                        else if (Events.Depois(pVal) && pVal.ActionSuccess)
+                        {
+                            ((Form)FormObjType).OnAfterLostFocus(FormUID, ref pVal, out BubbleEvent);
+                        }
+                    }
+
+                    #endregion
+
                     #region :: Double Click
 
                     else if (pVal.EventType == BoEventTypes.et_DOUBLE_CLICK)

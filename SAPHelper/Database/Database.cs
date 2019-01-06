@@ -119,7 +119,7 @@ namespace SAPHelper
             GC.Collect();
         }
 
-        public void ExcluirTabela(string nomeSemArroba)
+        private void _ExcluirTabela(string nomeSemArroba)
         {
             GC.Collect();
             UserObjectsMD oUDO = Global.Company.GetBusinessObject(BoObjectTypes.oUserObjectsMD);
@@ -148,6 +148,22 @@ namespace SAPHelper
 
             System.Runtime.InteropServices.Marshal.ReleaseComObject(objUserTablesMD);
             objUserTablesMD = null;
+        }
+
+        public void ExcluirTabela(Tabela tabela)
+        {
+            bool tabela_is_UDO = tabela is TabelaUDO;
+            TabelaUDO tabelaUDO = tabela_is_UDO ? (TabelaUDO)tabela : null;
+
+            _ExcluirTabela(tabela.NomeSemArroba);
+
+            if (tabela_is_UDO)
+            {
+                foreach (var tabelaFilha in tabelaUDO.TabelasFilhas)
+                {
+                    _ExcluirTabela(tabelaFilha.NomeSemArroba);
+                }
+            }
         }
 
         public bool ExisteTabela(string nome_tabela)

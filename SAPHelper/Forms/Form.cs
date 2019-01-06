@@ -152,7 +152,6 @@ namespace SAPHelper
         #endregion
 
 
-
         #region :: Double Click
 
 
@@ -161,6 +160,21 @@ namespace SAPHelper
             BubbleEvent = true;
         }
         public virtual void OnAfterDoubleClick(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+
+        #endregion
+
+
+        #region :: Lost Focus
+
+
+        public virtual void OnBeforeLostFocus(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+        }
+        public virtual void OnAfterLostFocus(string FormUID, ref ItemEvent pVal, out bool BubbleEvent)
         {
             BubbleEvent = true;
         }

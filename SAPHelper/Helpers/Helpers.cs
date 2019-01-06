@@ -20,6 +20,11 @@ namespace SAPHelper
             return valor.ToString().Replace(".", "").Replace(",", ".");
         }
 
+        public static string ToStringParaCampoSAPEmTela(double valor)
+        {
+            return valor.ToString().Replace(".", ",");
+        }
+
         public static DateTime ToDate(string date)
         {
             SBObob sBObob = GetSBOBob();
